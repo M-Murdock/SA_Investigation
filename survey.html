@@ -257,7 +257,7 @@
         </form>
     </div>
 
-    <script src="js/data-collector.js"></script>
+    <!-- <script src="js/data-collector.js"></script> -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             // Get and display user ID
@@ -313,24 +313,12 @@
             responses.expectations = formData.getAll('expectations');
             
             console.log('Survey responses:', responses);
-            
-            // Record demographics
-            if (typeof DataCollector !== 'undefined') {
-                DataCollector.recordDemographics({
-                    age: responses.age,
-                    gender: responses.gender,
-                    education: responses.education
-                });
-                
-                // Record pre-survey
-                DataCollector.recordSurvey('pre', responses);
-                console.log('Data recorded to DataCollector');
-            }
+
+            localStorage.setItem('pre_responses', JSON.stringify(responses));
             
             // Navigate to simulator
             console.log('Navigating to sim.html...');
             window.location.href = 'sim.html#1';
-            // window.location.href = 'sim.html';
         });
         
         function validateForm() {
