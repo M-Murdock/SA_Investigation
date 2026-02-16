@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-Study Survey</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        .user-id-badge {
+            background: #e3f2fd;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .question-group {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .question-group h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        label {
+            display: block;
+            margin: 15px 0 5px 0;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .likert-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .likert-option input[type="radio"] {
+            margin-bottom: 5px;
+        }
+        
+        .likert-option span {
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .radio-group {
+            margin: 10px 0;
+        }
+        
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            margin: 8px 0;
+            cursor: pointer;
+        }
+        
+        .radio-group input[type="radio"] {
+            margin-right: 10px;
+            width: auto;
+        }
+        
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 30px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        .required {
+            color: #d32f2f;
+        }
+        
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-id-badge">
+            User ID: <span id="userId"></span>
+        </div>
+        
+        <h1>Post-Study Survey</h1>
+        <p>Thank you for completing the simulation! Please answer the following questions about your experience.</p>
+        
+        <form id="surveyForm">
+            <!-- Experience with the System -->
+            <div class="question-group">
+                <h3>Your Experience</h3>
+                
+                <label>How easy was it to use the system? <span class="required">*</span></label>
+                <div class="likert-scale">
+                    <div class="likert-option">
+                        <input type="radio" name="ease-of-use" value="1" required>
+                        <span>Very<br>difficult</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="ease-of-use" value="2">
+                        <span>Somewhat<br>difficult</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="ease-of-use" value="3">
+                        <span>Neutral</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="ease-of-use" value="4">
+                        <span>Somewhat<br>easy</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="ease-of-use" value="5">
+                        <span>Very<br>easy</span>
+                    </div>
+                </div>
+                
+                <label>How helpful was the AI assistance? <span class="required">*</span></label>
+                <div class="likert-scale">
+                    <div class="likert-option">
+                        <input type="radio" name="helpfulness" value="1" required>
+                        <span>Not at all<br>helpful</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="helpfulness" value="2">
+                        <span>Slightly<br>helpful</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="helpfulness" value="3">
+                        <span>Moderately<br>helpful</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="helpfulness" value="4">
+                        <span>Very<br>helpful</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="helpfulness" value="5">
+                        <span>Extremely<br>helpful</span>
+                    </div>
+                </div>
+                
+                <label>How much did you feel in control? <span class="required">*</span></label>
+                <div class="likert-scale">
+                    <div class="likert-option">
+                        <input type="radio" name="control" value="1" required>
+                        <span>No<br>control</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="control" value="2">
+                        <span>Little<br>control</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="control" value="3">
+                        <span>Some<br>control</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="control" value="4">
+                        <span>Mostly in<br>control</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="control" value="5">
+                        <span>Complete<br>control</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Understanding -->
+            <div class="question-group">
+                <h3>AI Understanding</h3>
+                
+                <label>How well did the AI understand your goals? <span class="required">*</span></label>
+                <div class="likert-scale">
+                    <div class="likert-option">
+                        <input type="radio" name="understanding" value="1" required>
+                        <span>Not at all<br>well</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="understanding" value="2">
+                        <span>Slightly<br>well</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="understanding" value="3">
+                        <span>Moderately<br>well</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="understanding" value="4">
+                        <span>Very<br>well</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="understanding" value="5">
+                        <span>Extremely<br>well</span>
+                    </div>
+                </div>
+                
+                <label>How predictable was the AI's assistance? <span class="required">*</span></label>
+                <div class="likert-scale">
+                    <div class="likert-option">
+                        <input type="radio" name="predictability" value="1" required>
+                        <span>Very<br>unpredictable</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="predictability" value="2">
+                        <span>Somewhat<br>unpredictable</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="predictability" value="3">
+                        <span>Neutral</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="predictability" value="4">
+                        <span>Somewhat<br>predictable</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="predictability" value="5">
+                        <span>Very<br>predictable</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Trust & Satisfaction -->
+            <div class="question-group">
+                <h3>Trust & Satisfaction</h3>
+                
+                <label>How much did you trust the AI assistance? <span class="required">*</span></label>
+                <div class="likert-scale">
+                    <div class="likert-option">
+                        <input type="radio" name="trust" value="1" required>
+                        <span>No trust<br>at all</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="trust" value="2">
+                        <span>Little<br>trust</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="trust" value="3">
+                        <span>Moderate<br>trust</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="trust" value="4">
+                        <span>High<br>trust</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="trust" value="5">
+                        <span>Complete<br>trust</span>
+                    </div>
+                </div>
+                
+                <label>How satisfied were you with the overall experience? <span class="required">*</span></label>
+                <div class="likert-scale">
+                    <div class="likert-option">
+                        <input type="radio" name="satisfaction" value="1" required>
+                        <span>Very<br>dissatisfied</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="satisfaction" value="2">
+                        <span>Somewhat<br>dissatisfied</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="satisfaction" value="3">
+                        <span>Neutral</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="satisfaction" value="4">
+                        <span>Somewhat<br>satisfied</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="satisfaction" value="5">
+                        <span>Very<br>satisfied</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Open-ended Feedback -->
+            <div class="question-group">
+                <h3>Your Feedback</h3>
+                
+                <label>What did you like most about the AI assistance?</label>
+                <textarea id="liked-most" name="liked-most" placeholder="Your answer..."></textarea>
+                
+                <label>What did you like least about the AI assistance?</label>
+                <textarea id="liked-least" name="liked-least" placeholder="Your answer..."></textarea>
+                
+                <label>Do you have any suggestions for improvement?</label>
+                <textarea id="suggestions" name="suggestions" placeholder="Your answer..."></textarea>
+                
+                <label>Any other comments?</label>
+                <textarea id="other-comments" name="other-comments" placeholder="Your answer..."></textarea>
+            </div>
+            
+            <button type="submit">Complete Study</button>
+        </form>
+        
+        <div class="success-message" id="successMessage">
+            <h2>Thank you for participating!</h2>
+            <p>Your responses have been recorded. Your data file will download automatically.</p>
+            <p>You may now close this window.</p>
+        </div>
+    </div>
+
+    <script src="data-collector.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const condition_num = window.location.hash 
+            // Get and display user ID
+            const userId = localStorage.getItem('studyUserId');
+            console.log('User ID from localStorage:', userId);
+            
+            if (!userId) {
+                console.error('No user ID found');
+                alert('No user ID found. Redirecting to start page.');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            document.getElementById('userId').textContent = userId;
+            
+            // Record page visit
+            if (typeof DataCollector !== 'undefined') {
+                DataCollector.recordPageVisit('post-survey');
+            }
+            
+            // Form submission
+            const form = document.getElementById('surveyForm');
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Validate form
+            const isValid = true;//validateForm();
+            console.log('Form validation result:', isValid);
+            
+            if (!isValid) {
+                console.log('Form validation failed - check required fields');
+                alert('Please fill in all required fields before continuing.');
+                return;
+            }
+            
+            console.log('Form is valid, collecting responses...');
+            
+            // Collect all responses
+            const formData = new FormData(form);
+            const responses = {};
+            
+            responses.easeOfUse = parseInt(formData.get('ease-of-use'));
+            responses.helpfulness = parseInt(formData.get('helpfulness'));
+            responses.control = parseInt(formData.get('control'));
+            responses.understanding = parseInt(formData.get('understanding'));
+            responses.predictability = parseInt(formData.get('predictability'));
+            responses.trust = parseInt(formData.get('trust'));
+            responses.satisfaction = parseInt(formData.get('satisfaction'));
+            
+            // Open-ended responses
+            responses.likedMost = formData.get('liked-most');
+            responses.likedLeast = formData.get('liked-least');
+            responses.suggestions = formData.get('suggestions');
+            responses.otherComments = formData.get('other-comments');
+            
+            // Checkbox group - expectations
+            responses.expectations = formData.getAll('expectations');
+
+            // Export to JSON file
+            const dataStr = JSON.stringify(responses, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `survey_responses_${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            console.log("responses");
+            console.log('Survey responses:', responses);
+            
+            const condition_num = window.location.hash 
+            // // 
+            // THIS IS WHERE YOU NEED TO PUT THE NUMBER OF STUDY CONDITIONS!!!!!
+            // // 
+            if (condition_num == "#1") { // If we've finished all conditions 
+                console.log("Done with all conditions!")
+                // Record study completion
+                // DataCollector.recordEvent({
+                //     eventType: 'study_completed',
+                //     timestamp: Date.now()
+                // });
+                // console.log("event recorded")
+                // Export data
+                // DataCollector.exportData();
+                
+                // Show success message
+                form.style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                // window.location.href = 'thank_you.html';
+            }
+            else { // If there are more conditions left
+                let number = parseInt(condition_num.slice(1));
+                let result = `#${number + 1}`;
+                window.location.href = 'sim.html'+result;
+            }
+        });
+        }); // Close DOMContentLoaded
+        
+    </script>
+</body>
+</html>

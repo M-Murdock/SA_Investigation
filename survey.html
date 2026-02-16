@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Study Survey</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        .user-id-badge {
+            background: #e3f2fd;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .question-group {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .question-group h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        label {
+            display: block;
+            margin: 15px 0 5px 0;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .radio-group,
+        .checkbox-group {
+            margin: 10px 0;
+        }
+        
+        .radio-group label,
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            margin: 8px 0;
+            cursor: pointer;
+        }
+        
+        .radio-group input[type="radio"],
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            width: auto;
+        }
+        
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .likert-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .likert-option input[type="radio"] {
+            margin-bottom: 5px;
+        }
+        
+        .likert-option span {
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 30px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .required {
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-id-badge">
+            User ID: <span id="userId"></span>
+        </div>
+        
+        <h1>Pre-Study Survey</h1>
+        <p>Please answer the following questions before beginning the simulation task.</p>
+        
+        <form id="surveyForm">
+            <!-- Demographics -->
+            <div class="question-group">
+                <h3>Demographics</h3>
+                
+                <label>Age <span class="required">*</span></label>
+                <input type="number" id="age" name="age" min="18" max="100" required>
+                <div class="error-message" id="age-error">Please enter your age</div>
+                
+                <label>Gender <span class="required">*</span></label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select...</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="non-binary">Non-binary</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                    <option value="other">Other</option>
+                </select>
+                <div class="error-message" id="gender-error">Please select your gender</div>
+                
+                <label>Education Level <span class="required">*</span></label>
+                <select id="education" name="education" required>
+                    <option value="">Select...</option>
+                    <option value="high-school">High School</option>
+                    <option value="some-college">Some College</option>
+                    <option value="bachelors">Bachelor's Degree</option>
+                    <option value="masters">Master's Degree</option>
+                    <option value="doctorate">Doctorate</option>
+                    <option value="other">Other</option>
+                </select>
+                <div class="error-message" id="education-error">Please select your education level</div>
+            </div>
+            
+            <!-- Experience with Technology -->
+            <div class="question-group">
+                <h3>Experience with Technology</h3>
+                
+                <label>How comfortable are you with using computers? <span class="required">*</span></label>
+                <div class="likert-scale">
+                    <div class="likert-option">
+                        <input type="radio" name="computer-comfort" value="1" required>
+                        <span>Not at all<br>comfortable</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="computer-comfort" value="2">
+                        <span>Slightly<br>comfortable</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="computer-comfort" value="3">
+                        <span>Moderately<br>comfortable</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="computer-comfort" value="4">
+                        <span>Very<br>comfortable</span>
+                    </div>
+                    <div class="likert-option">
+                        <input type="radio" name="computer-comfort" value="5">
+                        <span>Extremely<br>comfortable</span>
+                    </div>
+                </div>
+                <div class="error-message" id="computer-comfort-error">Please select an option</div>
+                
+                <label>Have you used AI-powered assistants before? (e.g., Siri, Alexa, ChatGPT) <span class="required">*</span></label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ai-experience" value="never" required> Never</label>
+                    <label><input type="radio" name="ai-experience" value="rarely"> Rarely</label>
+                    <label><input type="radio" name="ai-experience" value="occasionally"> Occasionally</label>
+                    <label><input type="radio" name="ai-experience" value="frequently"> Frequently</label>
+                    <label><input type="radio" name="ai-experience" value="daily"> Daily</label>
+                </div>
+                <div class="error-message" id="ai-experience-error">Please select an option</div>
+            </div>
+            
+            <!-- Experience with Games/Controls -->
+            <div class="question-group">
+                <h3>Gaming & Control Experience</h3>
+                
+                <label>How often do you play video games or use keyboard controls? <span class="required">*</span></label>
+                <div class="radio-group">
+                    <label><input type="radio" name="gaming-frequency" value="never" required> Never</label>
+                    <label><input type="radio" name="gaming-frequency" value="rarely"> Rarely (Less than once a month)</label>
+                    <label><input type="radio" name="gaming-frequency" value="occasionally"> Occasionally (A few times a month)</label>
+                    <label><input type="radio" name="gaming-frequency" value="regularly"> Regularly (Weekly)</label>
+                    <label><input type="radio" name="gaming-frequency" value="daily"> Daily</label>
+                </div>
+                <div class="error-message" id="gaming-frequency-error">Please select an option</div>
+            </div>
+            
+            <!-- Expectations -->
+            <div class="question-group">
+                <h3>Expectations</h3>
+                
+                <label>What do you expect from an AI assistant that helps you complete a task? <span class="required">*</span></label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="expectations" value="accuracy"> High accuracy in understanding my goals</label>
+                    <label><input type="checkbox" name="expectations" value="speed"> Help me complete tasks faster</label>
+                    <label><input type="checkbox" name="expectations" value="ease"> Make tasks easier</label>
+                    <label><input type="checkbox" name="expectations" value="learning"> Learn from my behavior over time</label>
+                    <label><input type="checkbox" name="expectations" value="transparency"> Be transparent about what it's doing</label>
+                    <label><input type="checkbox" name="expectations" value="control"> Let me maintain control</label>
+                </div>
+                <div class="error-message" id="expectations-error">Please select at least one option</div>
+            </div>
+            
+            <button type="submit">Continue to Simulation</button>
+        </form>
+    </div>
+
+    <script src="js/data-collector.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // Get and display user ID
+            const userId = localStorage.getItem('studyUserId');
+            console.log('User ID from localStorage:', userId);
+            
+            if (!userId) {
+                console.error('No user ID found');
+                alert('No user ID found. Redirecting to start page.');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            document.getElementById('userId').textContent = userId;
+            
+            // Record page visit
+            if (typeof DataCollector !== 'undefined') {
+                DataCollector.recordPageVisit('survey');
+            }
+            
+            // Form submission
+            const form = document.getElementById('surveyForm');
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log('Form submitted');
+            
+            // Validate form
+            const isValid = validateForm();
+            console.log('Form validation result:', isValid);
+            
+            if (!isValid) {
+                console.log('Form validation failed - check required fields');
+                alert('Please fill in all required fields before continuing.');
+                return;
+            }
+            
+            console.log('Form is valid, collecting responses...');
+            
+            // Collect all responses
+            const formData = new FormData(form);
+            const responses = {};
+            
+            // Regular fields
+            responses.age = parseInt(formData.get('age'));
+            responses.gender = formData.get('gender');
+            responses.education = formData.get('education');
+            responses.computerComfort = parseInt(formData.get('computer-comfort'));
+            responses.aiExperience = formData.get('ai-experience');
+            responses.gamingFrequency = formData.get('gaming-frequency');
+            
+            // Checkbox group - expectations
+            responses.expectations = formData.getAll('expectations');
+            
+            console.log('Survey responses:', responses);
+            
+            // Record demographics
+            if (typeof DataCollector !== 'undefined') {
+                DataCollector.recordDemographics({
+                    age: responses.age,
+                    gender: responses.gender,
+                    education: responses.education
+                });
+                
+                // Record pre-survey
+                DataCollector.recordSurvey('pre', responses);
+                console.log('Data recorded to DataCollector');
+            }
+            
+            // Navigate to simulator
+            console.log('Navigating to sim.html...');
+            window.location.href = 'sim.html#1';
+            // window.location.href = 'sim.html';
+        });
+        
+        function validateForm() {
+            let isValid = true;
+            const errors = [];
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Validate age
+            const age = document.getElementById('age').value;
+            if (!age || age < 18 || age > 100) {
+                document.getElementById('age-error').style.display = 'block';
+                errors.push('age');
+                isValid = false;
+            }
+            
+            // Validate gender
+            if (!document.getElementById('gender').value) {
+                document.getElementById('gender-error').style.display = 'block';
+                errors.push('gender');
+                isValid = false;
+            }
+            
+            // Validate education
+            if (!document.getElementById('education').value) {
+                document.getElementById('education-error').style.display = 'block';
+                errors.push('education');
+                isValid = false;
+            }
+            
+            // Validate computer comfort
+            if (!document.querySelector('input[name="computer-comfort"]:checked')) {
+                document.getElementById('computer-comfort-error').style.display = 'block';
+                errors.push('computer-comfort');
+                isValid = false;
+            }
+            
+            // Validate AI experience
+            if (!document.querySelector('input[name="ai-experience"]:checked')) {
+                document.getElementById('ai-experience-error').style.display = 'block';
+                errors.push('ai-experience');
+                isValid = false;
+            }
+            
+            // Validate gaming frequency
+            if (!document.querySelector('input[name="gaming-frequency"]:checked')) {
+                document.getElementById('gaming-frequency-error').style.display = 'block';
+                errors.push('gaming-frequency');
+                isValid = false;
+            }
+            
+            // Validate expectations (at least one)
+            const expectations = document.querySelectorAll('input[name="expectations"]:checked');
+            if (expectations.length === 0) {
+                document.getElementById('expectations-error').style.display = 'block';
+                errors.push('expectations');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                console.log('Validation errors in fields:', errors);
+            }
+            
+            return isValid;
+        }
+        }); // Close DOMContentLoaded
+    </script>
+</body>
+</html>

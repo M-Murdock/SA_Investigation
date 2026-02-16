@@ -1,0 +1,8 @@
+filename,type,x,y,r
+q_table_bottomleft.npy,point,12,559,
+q_table_bottomright.npy,point,545,545,
+q_table_topright.npy,point,559,12,
+q_table_topleft.npy,point,55,55,
+q_table_orbit.npy,circle,300,300,80
+trained_poicies/q_table_orbit.npy,circle,300,300,80
+trained_policies/q_table_orbit.npy,circle,300,300,80

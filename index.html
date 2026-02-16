@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Autonomy Study</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .container {
+            max-width: 800px;
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        
+        .content {
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+        
+        .consent-box {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .consent-box h3 {
+            margin-top: 0;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-container label {
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        button:hover:not(:disabled) {
+            background: #5568d3;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .user-id-display {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Shared Autonomy Study</h1>
+        
+        <div class="content">
+            <p>Thank you for participating in our research on human-AI collaboration and shared autonomy systems.</p>
+            
+            <div class="user-id-display">
+                Your User ID: <span id="userId">Loading...</span>
+            </div>
+            <!-- study condition------------ -->
+            <span id="study_condition"></span>
+            
+            <p>This study will take approximately 15-20 minutes and consists of:</p>
+            <ul>
+                <li>A brief demographic survey</li>
+                <li>An interactive simulation task</li>
+                <li>A post-task questionnaire</li>
+            </ul>
+        </div>
+        
+        <div class="consent-box">
+            <h3>Study Information</h3>
+            <p><strong>Purpose:</strong> This study investigates how people interact with AI assistance systems that infer user goals and provide collaborative support.</p>
+            
+            <p><strong>What you'll do:</strong> You will control a cursor using arrow keys to move toward different goals. An AI system will observe your movements and provide assistance based on its inference of your intended goal.</p>
+            
+            <p><strong>Data Collection:</strong> We will collect:</p>
+            <ul>
+                <li>Anonymous demographic information</li>
+                <li>Your interactions with the simulator (movements, timing, actions)</li>
+                <li>Your responses to survey questions</li>
+            </ul>
+            
+            <p><strong>Privacy:</strong> All data is stored anonymously using only your assigned User ID. No personally identifiable information will be collected.</p>
+            
+            <p><strong>Voluntary:</strong> Your participation is completely voluntary. You may withdraw at any time without penalty.</p>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="consentCheck" />
+            <label for="consentCheck">I have read the above information and consent to participate in this study</label>
+        </div>
+        
+        <div class="info-box">
+            <strong>Note:</strong> Please complete the study in one sitting. Your User ID will be used to link your responses across all parts of the study.
+        </div>
+        
+        <button id="startButton" disabled>Begin Study</button>
+    </div>
+
+    <script src="js/data-collector.js"></script>
+    <script>
+        // Wait for page to fully load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Index page loaded');
+            window.location.hash = "start";
+            console.log(window.location)
+            const pageName = 'INDEX';
+            // Generate or retrieve user ID
+            let userId = localStorage.getItem('studyUserId');
+            console.log('Retrieved user ID from localStorage:', userId);
+            
+            if (!userId) {
+                // Generate new user ID: timestamp + random string
+                const timestamp = Date.now();
+                const randomStr = Math.random().toString(36).substring(2, 8);
+                userId = `user_${timestamp}_${randomStr}`;
+                console.log('Generated new user ID:', userId);
+                
+                localStorage.setItem('studyUserId', userId);
+                console.log('Saved user ID to localStorage');
+
+                // Verify it was saved
+                const savedId = localStorage.getItem('studyUserId');
+                console.log('Verification - retrieved user ID:', savedId);
+                
+                // Initialize data collection
+                if (typeof DataCollector !== 'undefined') {
+                    DataCollector.initializeUser(userId);
+                    DataCollector.saveSessionData();
+                    console.log('DataCollector initialized');
+                } else {
+                    console.error('DataCollector not found!');
+                }
+            } else {
+                console.log('Using existing user ID:', userId);
+            }
+            
+            // Display user ID
+            document.getElementById('userId').textContent = userId;
+            
+            // Handle consent checkbox
+            const consentCheck = document.getElementById('consentCheck');
+            const startButton = document.getElementById('startButton');
+            
+            consentCheck.addEventListener('change', (e) => {
+                startButton.disabled = !e.target.checked;
+            });
+            
+            // Handle start button
+            startButton.addEventListener('click', () => {
+                console.log('Start button clicked');
+                
+                // Record consent
+                if (typeof DataCollector !== 'undefined') {
+                    DataCollector.recordEvent({
+                        eventType: 'consent_given',
+                        timestamp: Date.now(),
+                        data: {
+                            consented: true
+                        }
+                    });
+                }
+                
+                // Navigate to survey
+                console.log('Navigating to survey.html');
+                window.location.href = 'survey.html#start';
+            });
+            
+            // Record page visit
+            if (typeof DataCollector !== 'undefined') {
+                DataCollector.recordPageVisit('index');
+                console.log('Page visit recorded for index');
+            }
+        });
+    </script>
+</body>
+</html>

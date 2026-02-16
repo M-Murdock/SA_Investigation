@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dot Mover Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden; /* Prevent scrolling */
+            position: fixed; /* Keep body fixed */
+            width: 100%;
+            height: 100%;
+        }
+        
+        h1 {
+            margin: 10px 0;
+        }
+        
+        #gameCanvas {
+            border: 2px solid #333;
+            background-color: #000;
+            cursor: crosshair;
+            display: block;
+            touch-action: none; /* Prevent touch scrolling on mobile */
+        }
+        
+        .controls {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+        }
+        
+        .control-group {
+            margin: 10px 0;
+        }
+        
+        label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        
+        select, input[type="range"] {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        
+        .info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 4px;
+        }
+        
+        .info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #1976D2;
+        }
+
+        .legend {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 4px;
+        }
+
+        .legend h4 {
+            margin: 5px 0 10px 0;
+        }
+
+        .policy-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #333;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div style="background: #e3f2fd; padding: 10px; border-radius: 6px; margin-bottom: 20px; font-family: 'Courier New', monospace; font-size: 14px; max-width: 600px;">
+        User ID: <span id="userId"></span>
+    </div>
+    
+    <h1>Dot Mover Simulation</h1>
+    <!-- <p><em>Move the dot with arrow keys. The AI infers your goal and provides assistance.</em></p> -->
+
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+
+    <button id="nextButton">Continue</button>
+
+    <script>
+        // Get the current condition # so we know which ordering to use for the conditions
+        const condition_num = window.location.hash 
+        
+        // if (condition_num == "#1") { // If we've just come from the demographics survey, we're transitioning into our first study condition
+        //     console.log("starting")
+        //     console.log(window.location.pathname)
+        // }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            let userId = localStorage.getItem('studyUserId');
+            document.getElementById('userId').textContent = userId;
+
+            // // Load or initialize session data using DataCollector
+            // DataCollector.loadSessionData();
+            // let condition = DataCollector.sessionData.condition;
+        });
+
+        // Prevent arrow keys from scrolling the page
+        window.addEventListener('keydown', function(e) {
+            // Arrow keys are 37-40
+            if([37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                e.preventDefault();
+            }
+        }, false);
+
+        // Prevent spacebar from scrolling
+        window.addEventListener('keydown', function(e) {
+            if(e.keyCode === 32 && e.target === document.body) {
+                e.preventDefault();
+            }
+        });
+
+        // Prevent touch/pointer scrolling on the canvas
+        const canvas = document.getElementById('gameCanvas');
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+
+        // Handle start button
+        nextButton.addEventListener('click', () => {
+            console.log('continue button clicked');
+            
+            // Navigate to survey
+            console.log('Navigating to post_survey.html');
+            window.location.href = 'post_survey.html' + condition_num;
+        });
+    </script>
+
+    <script src="js/data-collector.js"></script>
+    <script src="js/sim.js"></script>
+
+    
+</body>
+</html>

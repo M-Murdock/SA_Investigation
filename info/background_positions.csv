@@ -1,0 +1,7 @@
+filename,x,y, xscale,yscale
+sugar.png,55,545, 150,150
+milk_carton.png,545,545, 150,150
+cheese.png,545,55, 150,150
+egg.png,55,55, 150,150
+mixing_bowl.png, 300, 300, 300, 300
+spoon.png,None,None, 80,80
