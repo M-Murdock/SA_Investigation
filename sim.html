@@ -106,7 +106,7 @@
 </head>
 <body>
     <div style="background: #e3f2fd; padding: 10px; border-radius: 6px; margin-bottom: 20px; font-family: 'Courier New', monospace; font-size: 14px; max-width: 600px;">
-        User ID: <span id="userId"></span>
+        User ID: <span id="userId"></span>, Condition: <span id="condition"></span>
     </div>
     
     <h1>Dot Mover Simulation</h1>
@@ -117,21 +117,17 @@
     <button id="nextButton">Continue</button>
 
     <script>
-        // Get the current condition # so we know which ordering to use for the conditions
-        const condition_num = window.location.hash 
         
-        // if (condition_num == "#1") { // If we've just come from the demographics survey, we're transitioning into our first study condition
-        //     console.log("starting")
-        //     console.log(window.location.pathname)
-        // }
-
         window.addEventListener('DOMContentLoaded', () => {
             let userId = localStorage.getItem('studyUserId');
             document.getElementById('userId').textContent = userId;
 
-            // // Load or initialize session data using DataCollector
-            // DataCollector.loadSessionData();
-            // let condition = DataCollector.sessionData.condition;
+            // Get the current condition # so we know which ordering to use for the conditions
+            const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
+            let number = parseInt(condition_num.slice(1));
+            const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+            let cur_condition = condition_order.charAt(number-1)
+            document.getElementById('condition').textContent = cur_condition;
         });
 
         // Prevent arrow keys from scrolling the page
@@ -162,11 +158,7 @@
 
         // Handle start button
         nextButton.addEventListener('click', () => {
-            console.log('continue button clicked');
-            
-            // Navigate to survey
-            console.log('Navigating to post_survey.html');
-            window.location.href = 'post_survey.html' + condition_num;
+            window.location.href = 'post_survey.html' + window.location.hash;//condition_num;
         });
     </script>
 

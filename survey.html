@@ -312,7 +312,9 @@
             
             // Navigate to simulator
             console.log('Navigating to sim.html...');
-            window.location.href = 'sim.html#1';
+            // console.log(window.location.hash)
+            window.location.href = 'sim.html'+ window.location.hash
+            // window.location.href = 'sim.html#1';
         });
         
         function validateForm() {

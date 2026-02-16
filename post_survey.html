@@ -138,7 +138,7 @@
 <body>
     <div class="container">
         <div class="user-id-badge">
-            User ID: <span id="userId"></span>
+            User ID: <span id="userId"></span>, Condition: <span id="condition"></span>
         </div>
         
         <h1>Post-Study Survey</h1>
@@ -258,7 +258,7 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            const condition_num = window.location.hash 
+            // const condition_num = window.location.hash 
             // Get and display user ID
             const userId = localStorage.getItem('studyUserId');
             console.log('User ID from localStorage:', userId);
@@ -272,6 +272,13 @@
             
             document.getElementById('userId').textContent = userId;
             
+            // Get the current condition # so we know which ordering to use for the conditions
+            const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
+            let number = parseInt(condition_num.slice(1));
+            const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+            let cur_condition = condition_order.charAt(number-1)
+            document.getElementById('condition').textContent = cur_condition;
+
             // Form submission
             const form = document.getElementById('surveyForm');
         
@@ -315,12 +322,13 @@
             // Storing an object
             localStorage.setItem('post_responses', JSON.stringify(responses));
             
-            
             // // 
-            // THIS IS WHERE YOU NEED TO PUT THE NUMBER OF STUDY CONDITIONS!!!!!
-            // // 
-            const condition_num = window.location.hash 
-            if (condition_num == "#1") { // If we've finished all conditions 
+            const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
+            const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+            console.log("CONDITION NUM")
+            console.log(condition_num)
+            console.log(condition_order)
+            if (condition_num == "#"+condition_order.length) { // If we've finished all conditions 
 
                 // Retrieving and parsing the data back into an object
                 const savedResponses = JSON.parse(localStorage.getItem('post_responses'));
@@ -329,12 +337,12 @@
                 const allLocalData = JSON.stringify(localStorage);
                 console.log(allLocalData)
                 // All done - move to "thank you" page
-                // window.location.href = 'thank_you.html';
+                window.location.href = 'thank_you.html';
             }
             else { // If there are more conditions left, move onto the next
                 let number = parseInt(condition_num.slice(1));
                 let result = `#${number + 1}`;
-                window.location.href = 'sim.html'+result;
+                window.location.href = 'sim.html' + result + "," + condition_order;
             }
         });
         }); // Close DOMContentLoaded
