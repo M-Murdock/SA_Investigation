@@ -108,6 +108,19 @@
             margin: 20px 0;
         }
 
+        #ordering {
+            width: 40%;
+            padding: 12px;
+            /* margin: 8px 0; */
+            background: #fff3cd;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+
+            box-sizing: border-box;
+        }
+
+
     </style>
 </head>
 <body>
@@ -116,6 +129,10 @@
         
         <div class="content">
             <p>Thank you for participating in our research on human-AI collaboration and shared autonomy systems.</p>
+
+            <div class="info-box">
+                <strong>Study Ordering (leave blank):</strong> <input type="textbox" id="ordering" />
+            </div>
             
             <div class="user-id-display">
                 Your User ID: <span id="userId">Loading...</span>
@@ -166,7 +183,7 @@
         // Wait for page to fully load
         window.addEventListener('DOMContentLoaded', () => {
             console.log('Index page loaded');
-            window.location.hash = "start";
+            // window.location.hash = "start";
             console.log(window.location)
             const pageName = 'INDEX';
             // Generate or retrieve user ID
@@ -187,14 +204,7 @@
                 const savedId = localStorage.getItem('studyUserId');
                 console.log('Verification - retrieved user ID:', savedId);
                 
-                // Initialize data collection
-                if (typeof DataCollector !== 'undefined') {
-                    DataCollector.initializeUser(userId);
-                    DataCollector.saveSessionData();
-                    console.log('DataCollector initialized');
-                } else {
-                    console.error('DataCollector not found!');
-                }
+
             } else {
                 console.log('Using existing user ID:', userId);
             }
@@ -206,6 +216,8 @@
             const consentCheck = document.getElementById('consentCheck');
             const startButton = document.getElementById('startButton');
             
+            const ordering = document.getElementById('ordering');
+
             consentCheck.addEventListener('change', (e) => {
                 startButton.disabled = !e.target.checked;
             });
@@ -227,14 +239,14 @@
                 
                 // Navigate to survey
                 console.log('Navigating to survey.html');
-                window.location.href = 'survey.html#start';
+                window.location.href = 'survey.html#start'+ ',' + ordering.value;
             });
             
             // Record page visit
-            if (typeof DataCollector !== 'undefined') {
-                DataCollector.recordPageVisit('index');
-                console.log('Page visit recorded for index');
-            }
+            // if (typeof DataCollector !== 'undefined') {
+            //     DataCollector.recordPageVisit('index');
+            //     console.log('Page visit recorded for index');
+            // }
         });
     </script>
 </body>

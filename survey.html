@@ -257,7 +257,6 @@
         </form>
     </div>
 
-    <!-- <script src="js/data-collector.js"></script> -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             // Get and display user ID
@@ -272,11 +271,6 @@
             }
             
             document.getElementById('userId').textContent = userId;
-            
-            // Record page visit
-            if (typeof DataCollector !== 'undefined') {
-                DataCollector.recordPageVisit('survey');
-            }
             
             // Form submission
             const form = document.getElementById('surveyForm');

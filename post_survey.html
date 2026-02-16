@@ -255,7 +255,7 @@
         </div>
     </div>
 
-    <script src="data-collector.js"></script>
+
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const condition_num = window.location.hash 
@@ -271,11 +271,6 @@
             }
             
             document.getElementById('userId').textContent = userId;
-            
-            // Record page visit
-            if (typeof DataCollector !== 'undefined') {
-                DataCollector.recordPageVisit('post-survey');
-            }
             
             // Form submission
             const form = document.getElementById('surveyForm');
