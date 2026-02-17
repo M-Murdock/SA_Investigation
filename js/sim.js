@@ -528,6 +528,20 @@ class DotSimulator {
         this.setupEventListeners();
     }
 
+    setConditions(condition) {
+    /**
+     * Based on the current study condition, set our variables accordingly
+     */
+    if (condition=='A') {
+        console.log("Setting conditions")
+        this.inferenceType = Inference.BAYESIAN,
+        this.assistanceType = Assistance.DISTRIBUTION,
+        this.arbitrationType = Arbitration.LINEAR
+    }
+    console.log(this.inferenceType)
+    console.log(this.assistanceType)
+    console.log(this.arbitrationType)
+}
     // -------------------------
     // Background image loading
     // -------------------------
@@ -940,13 +954,16 @@ async function loadPolicies() {
 // Main entry point
 // -------------------------
 async function main() {
+    console.log("Entering main")
     const policies = await loadPolicies();
     const simulator = new DotSimulator(
-        "trained_policies",
-        Inference.BAYESIAN,
-        Assistance.DISTRIBUTION,
-        Arbitration.PROBABILISTIC
+        "trained_policies"
     );
+
+    
+    // Get the study condition
+    const condition = document.getElementById('condition').innerText;
+    simulator.setConditions(condition)
     
     // Load background images
     const backgroundConfig = [
@@ -958,9 +975,9 @@ async function main() {
         {filename: 'spoon.png', x: 'None', y: 'None', xscale: 80, yscale: 80}
     ];
     // "bayesian", "maxent", "crf"
-    simulator.INFERENCE_TYPE = "maxent";
+    // simulator.INFERENCE_TYPE = "maxent";
     // "linear", "probabilistic", "onlyuser"
-    simulator.ARBITRATION_TYPE = "linear";
+    // simulator.ARBITRATION_TYPE = "linear";
     
     simulator.loadBackgroundImages(backgroundConfig);
     simulator.initializePolicies(policies);
