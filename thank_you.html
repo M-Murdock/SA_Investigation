@@ -44,7 +44,9 @@
         <div class="checkmark">✓</div>
         <h1>Thank You!</h1>
         <p>We sincerely appreciate you taking the time to complete this study.</p>
-        <p>You may now close this window.</p>
+        <!-- <p>You may now close this window.</p> -->
+        <button id="return">Return to Start</button>
+        
     </div>
 
     <script>
@@ -76,6 +78,11 @@
         // Clear local storage after download
         console.log("clearing local storage");
         localStorage.clear();
+
+        const returnButton = document.getElementById("return");
+        returnButton.addEventListener("click", function() {
+            window.location.href = 'index.html';
+        });
 
     </script>
 </body>
