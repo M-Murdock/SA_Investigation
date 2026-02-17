@@ -46,5 +46,37 @@
         <p>We sincerely appreciate you taking the time to complete this study.</p>
         <p>You may now close this window.</p>
     </div>
+
+    <script>
+        // Get and display user ID
+        const userId = localStorage.getItem('studyUserId');
+        console.log('User ID from localStorage:', userId);
+        
+        if (!userId) {
+            console.error('No user ID found');
+            alert('No user ID found. Redirecting to start page.');
+            window.location.href = 'index.html';
+        }
+
+        // const savedResponses = JSON.parse(localStorage.getItem('final_responses_'));
+        // console.log(savedResponses); // Output: Alice
+
+        const allLocalData = JSON.stringify(localStorage, null, 2);
+        console.log(allLocalData);
+
+        // Download as JSON file
+        const blob = new Blob([allLocalData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `study_data_${userId}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        // Clear local storage after download
+        console.log("clearing local storage");
+        localStorage.clear();
+
+    </script>
 </body>
 </html>

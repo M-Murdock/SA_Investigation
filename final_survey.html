@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post-Condition Survey</title>
+    <title>Post-Study Survey</title>
     <style>
         body {
             margin: 0;
@@ -138,11 +138,11 @@
 <body>
     <div class="container">
         <div class="user-id-badge">
-            User ID: <span id="userId"></span>, Condition: <span id="condition"></span>
+            User ID: <span id="userId"></span>
         </div>
         
-        <h1>Post-Condition Survey</h1>
-        <p>Thank you for completing the simulation! Please answer the following questions about your experience.</p>
+        <h1>Post-Study Survey</h1>
+        <p>Thank you for completing the study! Please answer the questions below about your experiences</p>
         
         <form id="surveyForm">
             <!-- Experience with the System -->
@@ -229,7 +229,7 @@
             </div>
             
             <!-- Open-ended Feedback -->
-            <div class="question-group">
+            <!-- <div class="question-group">
                 <h3>Your Feedback</h3>
                 
                 <label>What did you like most about the AI assistance?</label>
@@ -243,22 +243,21 @@
                 
                 <label>Any other comments?</label>
                 <textarea id="other-comments" name="other-comments" placeholder="Your answer..."></textarea>
-            </div>
+            </div> -->
             
-            <button type="submit">Continue</button>
+            <button type="submit">Complete Study</button>
         </form>
         
-        <!-- <div class="success-message" id="successMessage">
+        <div class="success-message" id="successMessage">
             <h2>Thank you for participating!</h2>
             <p>Your responses have been recorded. Your data file will download automatically.</p>
             <p>You may now close this window.</p>
-        </div> -->
+        </div>
     </div>
 
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            // const condition_num = window.location.hash 
             // Get and display user ID
             const userId = localStorage.getItem('studyUserId');
             console.log('User ID from localStorage:', userId);
@@ -272,13 +271,6 @@
             
             document.getElementById('userId').textContent = userId;
             
-            // Get the current condition # so we know which ordering to use for the conditions
-            const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
-            let number = parseInt(condition_num.slice(1));
-            const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
-            let cur_condition = condition_order.charAt(number-1)
-            document.getElementById('condition').textContent = cur_condition;
-
             // Form submission
             const form = document.getElementById('surveyForm');
         
@@ -310,31 +302,48 @@
             responses.satisfaction = parseInt(formData.get('satisfaction'));
             
             // Open-ended responses
-            responses.likedMost = formData.get('liked-most');
-            responses.likedLeast = formData.get('liked-least');
-            responses.suggestions = formData.get('suggestions');
-            responses.otherComments = formData.get('other-comments');
+            // responses.likedMost = formData.get('liked-most');
+            // responses.likedLeast = formData.get('liked-least');
+            // responses.suggestions = formData.get('suggestions');
+            // responses.otherComments = formData.get('other-comments');
             
             // Checkbox group - expectations
             responses.expectations = formData.getAll('expectations');
 
-            // Storing user responses to local storage
-            localStorage.setItem('post_responses_'+cur_condition, JSON.stringify(responses));
+            console.log(responses)
+            // Storing an object
+            localStorage.setItem('final_responses', JSON.stringify(responses));
             
-            // Get the current condition 
-            const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
-            const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+            // // 
+            // const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
+            // const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+            // console.log("CONDITION NUM")
+            // console.log(condition_num)
+            // console.log(condition_order)
+            // save data to local storage
+            // const savedResponses = JSON.parse(localStorage.getItem('final_responses_'));
+            // // console.log(savedResponses); // Output: Alice
 
-            // If we've finished all conditions, go to the end-of-study survey
-            if (condition_num == "#"+condition_order.length) { 
-                window.location.href = 'final_survey.html';
-            }
-            // If there are more conditions left, move onto the next
-            else { 
-                let number = parseInt(condition_num.slice(1));
-                let result = `#${number + 1}`;
-                window.location.href = 'sim.html' + result + "," + condition_order;
-            }
+            // const allLocalData = JSON.stringify(localStorage, null, 2);
+            // // console.log(allLocalData);
+
+            // // Download as JSON file
+            // const blob = new Blob([allLocalData], { type: 'application/json' });
+            // const url = URL.createObjectURL(blob);
+            // const a = document.createElement('a');
+            // a.href = url;
+            // a.download = `study_data_${userId}.json`;
+            // a.click();
+            // URL.revokeObjectURL(url);
+
+            // // Clear local storage after download
+            // console.log("clearing local storage");
+            // localStorage.clear();
+            
+            // All done - move to "thank you" page
+            window.location.href = 'thank_you.html';
+            
+            
         });
         }); // Close DOMContentLoaded
         
