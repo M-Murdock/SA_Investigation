@@ -621,7 +621,7 @@ class DotSimulator {
                     y: data.pos[1] - data.height / 2
                 };
                 this.ctx.save();
-                this.ctx.globalAlpha = 0.3;
+                this.ctx.globalAlpha = 0.9;
                 this.ctx.drawImage(data.image, imgRect.x, imgRect.y, data.width, data.height);
                 this.ctx.restore();
             }
@@ -969,7 +969,7 @@ async function main() {
     const backgroundConfig = [
         {filename: 'sugar.png', x: 55, y: 545, xscale: 150, yscale: 150},
         {filename: 'milk_carton.png', x: 545, y: 545, xscale: 150, yscale: 150},
-        {filename: 'cheese.png', x: 545, y: 55, xscale: 150, yscale: 150},
+        {filename: 'chocolate_chips.png', x: 545, y: 55, xscale: 150, yscale: 150},
         {filename: 'egg.png', x: 55, y: 55, xscale: 150, yscale: 150},
         {filename: 'mixing_bowl.png', x: 300, y: 300, xscale: 300, yscale: 300},
         {filename: 'spoon.png', x: 'None', y: 'None', xscale: 80, yscale: 80}
