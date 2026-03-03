@@ -69,7 +69,7 @@
         }
         
         button {
-            margin-top: 10px;
+            /* margin-top: 10px; */
             padding: 10px 20px;
             background: #2196F3;
             color: white;
@@ -102,6 +102,12 @@
             margin-right: 5px;
             vertical-align: middle;
         }
+        #canvas-wrapper {
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
@@ -112,9 +118,11 @@
     <h1>Dot Mover Simulation</h1>
     <!-- <p><em>Move the dot with arrow keys. The AI infers your goal and provides assistance.</em></p> -->
 
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <div id="canvas-wrapper">
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
 
-    <button id="nextButton">Continue</button>
+        <button id="nextButton">Continue</button>
+    </div>
 
     <script>
         

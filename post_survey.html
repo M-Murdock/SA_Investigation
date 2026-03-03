@@ -133,6 +133,14 @@
             margin-top: 20px;
             display: none;
         }
+
+        .img-env {
+            width:30%;
+            height:30%;
+            padding-left: 20px;
+            margin-top: 20px;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -145,37 +153,41 @@
         <p>Thank you for completing the simulation! Please answer the following questions about your experience.</p>
         
         <form id="surveyForm">
-            <!-- Experience with the System -->
+            <!-- Recall -->
             <div class="question-group">
-                <h3>Your Experience</h3>
-                
-                <label>How easy was it to use the system? <span class="required">*</span></label>
-                <div class="likert-scale">
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="1" required>
-                        <span>Very<br>difficult</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="2">
-                        <span>Somewhat<br>difficult</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="3">
-                        <span>Neutral</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="4">
-                        <span>Somewhat<br>easy</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="5">
-                        <span>Very<br>easy</span>
-                    </div>
+                <h3>Recall</h3>
+                <span>Given the image below, suppose that you pressed "up" on your keyboard. What direction do you expect the spoon to move in?</span>
+                <img class="img-env", src="alternate_envs/alternate_env2.png"/>
+                <div class="radio-group">
+                    <label><input type="radio" name="recall" value="up"> up </label>
+                    <label><input type="radio" name="recall" value="down"> down </label>
+                    <label><input type="radio" name="recall" value="left"> left </label>
+                    <label><input type="radio" name="recall" value="right"> right </label>
                 </div>
-                
+                <label for="recall-confidence">Confidence in your answer (0 to 10):</label>
+            <input type="range" id="recall-confidence" name="recall-confidence" min="0" max="10" value="5">
+            </div>
+
+            <!-- Conceptual -->
+            <div class="question-group">
+                <label>How does the behavior above relate to the system's overall goal?</label>
+                <textarea id="overall-goal" name="overall-goal" placeholder="Your answer..."></textarea>
+            </div>
+
+            <!-- Procedural -->
+            <div class="question-group">
+                <h3>Predict</h3>
+                <span>Given the image below, suppose that you pressed "up" on your keyboard. What direction do you expect the spoon to move in?</span>
+                <img class="img-env", src="alternate_envs/alternate_env1.png"/>
+                <div class="radio-group">
+                    <label><input type="radio" name="recall" value="up"> up </label>
+                    <label><input type="radio" name="recall" value="down"> down </label>
+                    <label><input type="radio" name="recall" value="left"> left </label>
+                    <label><input type="radio" name="recall" value="right"> right </label>
+                </div>
             </div>
             
-            <!-- Trust & Satisfaction -->
+            <!-- Trust & Satisfaction
             <div class="question-group">
                 <h3>Trust & Satisfaction</h3>
                 
@@ -228,8 +240,8 @@
                 </div>
             </div>
             
-            <!-- Open-ended Feedback -->
-            <div class="question-group">
+            Open-ended Feedback -->
+            <!-- <div class="question-group">
                 <h3>Your Feedback</h3>
                 
                 <label>What did you like most about the AI assistance?</label>
@@ -243,10 +255,10 @@
                 
                 <label>Any other comments?</label>
                 <textarea id="other-comments" name="other-comments" placeholder="Your answer..."></textarea>
-            </div>
+            </div> -->
             
             <button type="submit">Continue</button>
-        </form>
+        </form> 
         
         <!-- <div class="success-message" id="successMessage">
             <h2>Thank you for participating!</h2>

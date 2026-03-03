@@ -529,19 +529,40 @@ class DotSimulator {
     }
 
     setConditions(condition) {
-    /**
-     * Based on the current study condition, set our variables accordingly
-     */
-    if (condition=='A') {
-        console.log("Setting conditions")
-        this.inferenceType = Inference.BAYESIAN,
-        this.assistanceType = Assistance.DISTRIBUTION,
-        this.arbitrationType = Arbitration.LINEAR
+        console.log("setting conditions");
+        /**
+         * Based on the current study condition, set our variables accordingly
+         */
+        switch(condition) {
+            case 'A':
+                this.inferenceType = Inference.BAYESIAN;
+                this.arbitrationType = Arbitration.PROBABILISTIC;
+                break;
+            case 'B': 
+                this.inferenceType = Inference.BAYESIAN;
+                this.arbitrationType = Arbitration.LINEAR;
+                break;
+            case 'C': 
+                this.inferenceType = Inference.MAX_ENT;
+                this.arbitrationType = Arbitration.PROBABILISTIC;
+                break;
+            case 'D': 
+                this.inferenceType = Inference.MAX_ENT;
+                this.arbitrationType = Arbitration.LINEAR;
+                break;
+            case 'E': 
+                this.inferenceType = Inference.CRF;
+                this.arbitrationType = Arbitration.PROBABILISTIC;
+                break;
+            case 'F': 
+                this.inferenceType = Inference.CRF;
+                this.arbitrationType = Arbitration.LINEAR;
+                break;
+        }
+        console.log("condition:" );
+        console.log(this.inferenceType);
+        console.log(this.arbitrationType)
     }
-    console.log(this.inferenceType)
-    console.log(this.assistanceType)
-    console.log(this.arbitrationType)
-}
     // -------------------------
     // Background image loading
     // -------------------------
@@ -954,7 +975,6 @@ async function loadPolicies() {
 // Main entry point
 // -------------------------
 async function main() {
-    console.log("Entering main")
     const policies = await loadPolicies();
     const simulator = new DotSimulator(
         "trained_policies"
@@ -963,7 +983,8 @@ async function main() {
     
     // Get the study condition
     const condition = document.getElementById('condition').innerText;
-    simulator.setConditions(condition)
+    simulator.setConditions(condition);
+    console.log("conditions set");
     
     // Load background images
     const backgroundConfig = [
