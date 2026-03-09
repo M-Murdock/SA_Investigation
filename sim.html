@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dot Mover Simulation</title>
+    <!-- <title>Dot Mover Simulation</title> -->
     <style>
         body {
             margin: 0;
@@ -29,6 +29,7 @@
             cursor: crosshair;
             display: block;
             touch-action: none; /* Prevent touch scrolling on mobile */
+            width:48%;
         }
         
         .controls {
@@ -77,6 +78,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            width: fit-content;
         }
         
         button:hover {
@@ -115,13 +117,15 @@
         User ID: <span id="userId"></span>, Condition: <span id="condition"></span>
     </div>
     
-    <h1>Dot Mover Simulation</h1>
+    <!-- <h1>Dot Mover Simulation</h1> -->
     <!-- <p><em>Move the dot with arrow keys. The AI infers your goal and provides assistance.</em></p> -->
 
     <div id="canvas-wrapper">
         <canvas id="gameCanvas" width="600" height="600"></canvas>
-
-        <button id="nextButton">Continue</button>
+        <div style="display: flex; flex-direction: column; gap: 10px; width:50%;">
+            <span style="width:80%">Use the arrow keys to move the spoon. You will be sharing control over this spoon with an agent that knows how to complete a specific cooking task. The agent knows how to complete 3 behaviors. Pay attention to the spoon's motion and try to identify those 3 behaviors and their connection to the agent's overall goal.</span>
+            <button id="nextButton">Continue to Survey</button>
+        </div>
     </div>
 
     <script>
