@@ -100,7 +100,8 @@
             cursor: pointer;
         }
         
-        .radio-group input[type="radio"] {
+        .radio-group input[type="radio"],
+        .radio-group input[type="checkbox"] {
             margin-right: 10px;
             width: auto;
         }
@@ -153,124 +154,130 @@
         <p>Thank you for completing the simulation! Please answer the following questions about your experience.</p>
         
         <form id="surveyForm">
+            <!-------------->
             <!-- Recall -->
             <div class="question-group">
                 <h3>Recall</h3>
                 <span>Given the image below, suppose that you pressed "up" on your keyboard. What direction do you expect the spoon to move in?</span>
-                <img class="img-env", src="alternate_envs/alternate_env2.png"/>
+                <br>
+                <img class="img-env", src="alternate_envs/sim_screenshot.png"/>
                 <div class="radio-group">
                     <label><input type="radio" name="recall" value="up"> up </label>
                     <label><input type="radio" name="recall" value="down"> down </label>
                     <label><input type="radio" name="recall" value="left"> left </label>
                     <label><input type="radio" name="recall" value="right"> right </label>
                 </div>
+                <!-- confidence -->
                 <label for="recall-confidence">Confidence in your answer (0 to 10):</label>
-            <input type="range" id="recall-confidence" name="recall-confidence" min="0" max="10" value="5">
+                <input type="range" id="recall-confidence" name="recall-confidence" min="0" max="10" value="5">
             </div>
+            <!-------------->
 
-            <!-- Conceptual -->
+            <!-------------->
+            <!-- Understand -->
             <div class="question-group">
-                <label>How does the behavior above relate to the system's overall goal?</label>
+                <label>Why do you think the agent performed that action?</label>
                 <textarea id="overall-goal" name="overall-goal" placeholder="Your answer..."></textarea>
-            </div>
 
-            <!-- Procedural -->
+                <!-- confidence -->
+                <label for="understand-confidence">Confidence in your answer (0 to 10):</label>
+                <input type="range" id="understand-confidence" name="understand-confidence" min="0" max="10" value="5">
+            </div>
+            <!-------------->
+
+            <!-------------->
+            <!-- Analyze -->
             <div class="question-group">
                 <h3>Predict</h3>
-                <span>Given the image below, suppose that you pressed "up" on your keyboard. What direction do you expect the spoon to move in?</span>
+                <span>Given the image below, what are the actions that the agent is choosing between (select all that apply)?</span>
                 <img class="img-env", src="alternate_envs/alternate_env1.png"/>
                 <div class="radio-group">
-                    <label><input type="radio" name="recall" value="up"> up </label>
-                    <label><input type="radio" name="recall" value="down"> down </label>
-                    <label><input type="radio" name="recall" value="left"> left </label>
-                    <label><input type="radio" name="recall" value="right"> right </label>
+                    <label><input type="checkbox" name="predict-actions" value="up"> up </label>
+                    <label><input type="checkbox" name="predict-actions" value="down"> down </label>
+                    <label><input type="checkbox" name="predict-actions" value="left"> left </label>
+                    <label><input type="checkbox" name="predict-actions" value="right"> right </label>
                 </div>
+
+                <!-- confidence -->
+                <label for="analyze-confidence">Confidence in your answer (0 to 10):</label>
+                <input type="range" id="analyze-confidence" name="analyze-confidence" min="0" max="10" value="5">
             </div>
-            
-            <!-- Trust & Satisfaction
+            <!-------------->
+
+            <!-------------->
+            <!-- Create -->
             <div class="question-group">
-                <h3>Trust & Satisfaction</h3>
-                
-                <label>How much did you trust the AI assistance? <span class="required">*</span></label>
-                <div class="likert-scale">
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="1" required>
-                        <span>No trust<br>at all</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="2">
-                        <span>Little<br>trust</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="3">
-                        <span>Moderate<br>trust</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="4">
-                        <span>High<br>trust</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="5">
-                        <span>Complete<br>trust</span>
-                    </div>
-                </div>
-                
-                <label>How satisfied were you with the overall experience? <span class="required">*</span></label>
-                <div class="likert-scale">
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="1" required>
-                        <span>Very<br>dissatisfied</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="2">
-                        <span>Somewhat<br>dissatisfied</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="3">
-                        <span>Neutral</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="4">
-                        <span>Somewhat<br>satisfied</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="5">
-                        <span>Very<br>satisfied</span>
-                    </div>
-                </div>
+                <label>Describe what you think the agent's decision-making process looks like</label>
+                <textarea id="create" name="create" placeholder="Your answer..."></textarea>
+
+                <!-- confidence -->
+                <label for="create-confidence">Confidence in your answer (0 to 10):</label>
+                <input type="range" id="create-confidence" name="create-confidence" min="0" max="10" value="5">
             </div>
-            
-            Open-ended Feedback -->
-            <!-- <div class="question-group">
-                <h3>Your Feedback</h3>
-                
-                <label>What did you like most about the AI assistance?</label>
-                <textarea id="liked-most" name="liked-most" placeholder="Your answer..."></textarea>
-                
-                <label>What did you like least about the AI assistance?</label>
-                <textarea id="liked-least" name="liked-least" placeholder="Your answer..."></textarea>
-                
-                <label>Do you have any suggestions for improvement?</label>
-                <textarea id="suggestions" name="suggestions" placeholder="Your answer..."></textarea>
-                
-                <label>Any other comments?</label>
-                <textarea id="other-comments" name="other-comments" placeholder="Your answer..."></textarea>
-            </div> -->
+            <!-------------->
+
+            <!-- SUS -->
+            <div class="question-group">
+                <h3>System Usability Scale (SUS)</h3>
+
+                <fieldset class="likert-field">
+                    <legend>I think that I would like to use this system frequently. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-1"></div>
+                </fieldset>
+
+                <fieldset class="likert-field">
+                    <legend>I found the system unnecessarily complex. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-2"></div>
+                </fieldset>
+
+                <fieldset class="likert-field">
+                    <legend>I thought the system was easy to use. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-3"></div>
+                </fieldset>
+
+                <fieldset class="likert-field">
+                    <legend>I think that I would need the support of a technical person to be able to use this system. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-4"></div>
+                </fieldset>
+
+                <fieldset class="likert-field">
+                    <legend>I found the various functions in this system were well integrated. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-5"></div>
+                </fieldset>
+
+                <fieldset class="likert-field">
+                    <legend>I thought there was too much inconsistency in this system. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-6"></div>
+                </fieldset>
+
+                <fieldset class="likert-field">
+                    <legend>I would imagine that most people would learn to use this system very quickly. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-7"></div>
+                </fieldset>
+
+                <fieldset class="likert-field">
+                    <legend>I found the system very cumbersome to use. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-8"></div>
+                </fieldset>
+
+                <fieldset class="likert-field">
+                    <legend>I felt very confident using the system. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-9"></div>
+                </fieldset>
+
+                <fieldset class="likert-field">
+                    <legend>I needed to learn a lot of things before I could get going with this system. <span class="required">*</span></legend>
+                    <div class="likert-scale" data-name="sus-10"></div>
+                </fieldset>
+            </div>
             
             <button type="submit">Continue</button>
         </form> 
-        
-        <!-- <div class="success-message" id="successMessage">
-            <h2>Thank you for participating!</h2>
-            <p>Your responses have been recorded. Your data file will download automatically.</p>
-            <p>You may now close this window.</p>
-        </div> -->
     </div>
 
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            // const condition_num = window.location.hash 
             // Get and display user ID
             const userId = localStorage.getItem('studyUserId');
             console.log('User ID from localStorage:', userId);
@@ -288,67 +295,89 @@
             const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
             let number = parseInt(condition_num.slice(1));
             const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
-            let cur_condition = condition_order.charAt(number-1)
+            let cur_condition = condition_order.charAt(number - 1);
             document.getElementById('condition').textContent = cur_condition;
 
             // Form submission
             const form = document.getElementById('surveyForm');
         
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Validate form
-            const isValid = true;//validateForm();
-            console.log('Form validation result:', isValid);
-            
-            if (!isValid) {
-                console.log('Form validation failed - check required fields');
-                alert('Please fill in all required fields before continuing.');
-                return;
-            }
-            
-            console.log('Form is valid, collecting responses...');
-            
-            // Collect all responses
-            const formData = new FormData(form);
-            const responses = {};
-            
-            responses.easeOfUse = parseInt(formData.get('ease-of-use'));
-            // responses.helpfulness = parseInt(formData.get('helpfulness'));
-            // responses.control = parseInt(formData.get('control'));
-            // responses.understanding = parseInt(formData.get('understanding'));
-            // responses.predictability = parseInt(formData.get('predictability'));
-            responses.trust = parseInt(formData.get('trust'));
-            responses.satisfaction = parseInt(formData.get('satisfaction'));
-            
-            // Open-ended responses
-            responses.likedMost = formData.get('liked-most');
-            responses.likedLeast = formData.get('liked-least');
-            responses.suggestions = formData.get('suggestions');
-            responses.otherComments = formData.get('other-comments');
-            
-            // Checkbox group - expectations
-            responses.expectations = formData.getAll('expectations');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const isValid = true;
+                console.log('Form validation result:', isValid);
+                
+                if (!isValid) {
+                    alert('Please fill in all required fields before continuing.');
+                    return;
+                }
+                
+                console.log('Form is valid, collecting responses...');
+                
+                // Collect all responses
+                const formData = new FormData(form);
+                const responses = {};
 
-            // Storing user responses to local storage
-            localStorage.setItem('post_responses_'+cur_condition, JSON.stringify(responses));
-            
-            // Get the current condition 
-            const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
-            const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+                // Recall
+                responses.recall = formData.get('recall');
+                responses.recallConfidence = parseInt(formData.get('recall-confidence'));
 
-            // If we've finished all conditions, go to the end-of-study survey
-            if (condition_num == "#"+condition_order.length) { 
-                window.location.href = 'final_survey.html';
-            }
-            // If there are more conditions left, move onto the next
-            else { 
-                let number = parseInt(condition_num.slice(1));
-                let result = `#${number + 1}`;
-                window.location.href = 'sim.html' + result + "," + condition_order;
-            }
-        });
+                // Understand
+                responses.overallGoal = formData.get('overall-goal');
+                responses.understandConfidence = parseInt(formData.get('understand-confidence'));
+
+                // Predict (checkboxes)
+                responses.predictActions = formData.getAll('predict-actions');
+                responses.analyzeConfidence = parseInt(formData.get('analyze-confidence'));
+
+                // Create
+                responses.create = formData.get('create');
+                responses.createConfidence = parseInt(formData.get('create-confidence'));
+
+                // Trust & Satisfaction
+                responses.sus1 = parseInt(formData.get('sus-1'));
+                responses.sus2 = parseInt(formData.get('sus-2'));
+                responses.sus3 = parseInt(formData.get('sus-3'));
+                responses.sus4 = parseInt(formData.get('sus-4'));
+                responses.sus5 = parseInt(formData.get('sus-5'));
+                responses.sus6 = parseInt(formData.get('sus-6'));
+                responses.sus7 = parseInt(formData.get('sus-7'));
+                responses.sus8 = parseInt(formData.get('sus-8'));
+                responses.sus9 = parseInt(formData.get('sus-9'));
+                responses.sus10 = parseInt(formData.get('sus-10'));
+
+                console.log('Responses:', responses);
+                
+                // Store to local storage keyed by condition
+                localStorage.setItem('post_responses_' + cur_condition, JSON.stringify(responses));
+                
+                // Get the current condition for navigation
+                const nav_condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
+                const nav_condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+
+                // If we've finished all conditions, go to the end-of-study survey
+                if (nav_condition_num == "#" + nav_condition_order.length) { 
+                    window.location.href = 'final_survey.html';
+                }
+                // If there are more conditions left, move onto the next
+                else { 
+                    let number = parseInt(nav_condition_num.slice(1));
+                    let result = `#${number + 1}`;
+                    window.location.href = 'sim.html' + result + "," + nav_condition_order;
+                }
+            });
         }); // Close DOMContentLoaded
+
+        document.querySelectorAll('.likert-scale[data-name]').forEach(scale => {
+            const name = scale.dataset.name;
+            const labels =   "Strongly Disagree <br> 1,2,3,4,Strongly Agree  <br> 5".split(',');
+            scale.innerHTML = labels.map((label, i) => `
+            <div class="likert-option">
+                <input type="radio" name="${name}" value="${i + 1}" ${i === 0 ? 'required' : ''}>
+                <span>${label.replace(' ', '<br>')}</span>
+            </div>`
+            ).join('');
+        });
         
     </script>
 </body>

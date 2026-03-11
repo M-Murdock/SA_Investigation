@@ -48,7 +48,47 @@
         .consent-box h3 {
             margin-top: 0;
         }
-        
+
+        .consent-box h4 {
+            margin-top: 16px;
+            margin-bottom: 4px;
+        }
+
+        .key-info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            border: 1px solid #667eea;
+        }
+
+        .key-info-table th {
+            background: #667eea;
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .key-info-table td {
+            padding: 12px 14px;
+            vertical-align: top;
+            line-height: 1.6;
+            border-top: 1px solid #ddd;
+        }
+
+        .key-info-table td p {
+            margin: 6px 0;
+        }
+
+        .pi-info {
+            background: #eef0fb;
+            border-radius: 6px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
         .checkbox-container {
             display: flex;
             align-items: center;
@@ -111,16 +151,12 @@
         #ordering {
             width: 40%;
             padding: 12px;
-            /* margin: 8px 0; */
             background: #fff3cd;
             display: inline-block;
             border: 1px solid #ccc;
             border-radius: 4px;
-
             box-sizing: border-box;
         }
-
-
     </style>
 </head>
 <body>
@@ -139,36 +175,73 @@
             </div>
             <!-- study condition------------ -->
             <span id="study_condition"></span>
-            
-            <p>This study will take approximately 15-20 minutes and consists of:</p>
-            <ul>
-                <li>A brief demographic survey</li>
-                <li>An interactive simulation task</li>
-                <li>A post-task questionnaire</li>
-            </ul>
         </div>
         
         <div class="consent-box">
-            <h3>Study Information</h3>
-            <p><strong>Purpose:</strong> This study investigates how people interact with AI assistance systems that infer user goals and provide collaborative support.</p>
-            
-            <p><strong>What you'll do:</strong> You will control a cursor using arrow keys to move toward different goals. An AI system will observe your movements and provide assistance based on its inference of your intended goal.</p>
-            
-            <p><strong>Data Collection:</strong> We will collect:</p>
-            <ul>
-                <li>Anonymous demographic information</li>
-                <li>Your interactions with the simulator (movements, timing, actions)</li>
-                <li>Your responses to survey questions</li>
-            </ul>
-            
-            <p><strong>Privacy:</strong> All data is stored anonymously using only your assigned User ID. No personally identifiable information will be collected.</p>
-            
-            <p><strong>Voluntary:</strong> Your participation is completely voluntary. You may withdraw at any time without penalty.</p>
+            <h3>Tufts University — Consent to Participate in a Research Study</h3>
+            <p><strong>Title of the Study:</strong> Explainability for Shared Autonomy</p>
+
+            <div class="pi-info">
+                <strong>Principal Investigator:</strong> Elaine Short — Assistant Professor, Department of Computer Science<br>
+                <strong>Phone:</strong> 617-627-2225<br>
+                <strong>Email:</strong> elaine.short@tufts.edu
+            </div>
+
+            <p>You are being asked to volunteer in a research study. Please read the information below carefully before deciding whether to participate. Please ask questions about anything you do not understand.</p>
+
+            <table class="key-info-table">
+                <thead>
+                    <tr><th>Key Information for You to Consider</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>
+                        <p><strong>Statement of Research:</strong> You are being asked to volunteer for a research study. It is up to you whether you choose to participate or not. There will be no penalty or loss of benefits to which you are otherwise entitled if you choose not to participate or discontinue participation.</p>
+                        <p><strong>Purpose:</strong> The purpose of this research is to evaluate how participants understand and interact and collaborate with an artificial intelligence (AI) system.</p>
+                        <p><strong>Duration:</strong> Your participation is expected to last approximately 30 minutes.</p>
+                        <p><strong>Procedures and Activities:</strong> You will be asked to provide input to a computer simulation using a keyboard. You will also be asked to provide overall feedback on the interaction via questionnaires.</p>
+                        <p><strong>Risks:</strong> The risks or discomforts associated with this research are minimal.</p>
+                        <p><strong>Benefits:</strong> There may be no personal benefit from your participation, but there may be potential benefits to improving human-robot collaborations.</p>
+                    </td></tr>
+                </tbody>
+            </table>
+
+            <h4>What is this study about?</h4>
+            <p>Researchers at Tufts University are conducting a study on how people understand and interact with AI in collaborative settings. You are being asked to participate because you have shown interest in the study. Your participation in the study is expected to last 30 minutes.</p>
+
+            <h4>What will happen during this research?</h4>
+            <p>If you agree to participate, you will do simple tasks — like moving a virtual spoon to an ingredient — in an online AI-driven cooking simulation using arrow keys on a keyboard. While you do the task, you may receive help from the online system. You will complete the task over 6 rounds; in each round the task and environment remain the same, but how the system attempts to help you will change. Following each round, you will answer a survey assessing your understanding of the agent's assistance and goals. You will also answer questions about your general background and your experience performing the tasks.</p>
+
+            <h4>What will you do to protect my privacy?</h4>
+            <p>We will take measures to protect your privacy and confidentiality. We will not collect your name or any other personally identifiable data. All data will be stored on a secure server with access limited only to the researchers of this study, except as required by individuals and organizations responsible for conducting or monitoring this research (including the Tufts SBER IRB). The results of the study may be published.</p>
+
+            <h4>What is the compensation for the research?</h4>
+            <p>You will receive compensation in the form of snacks or candy, provided after each session.</p>
+
+            <h4>Is my participation voluntary, and can I withdraw?</h4>
+            <p>Taking part in this research study is your decision. You do not have to take part, but if you do, you can stop at any time without penalty and without affecting your relationship with Tufts University, Dr. Elaine Short, or the research team. You have the right to choose not to participate in any study activity or to withdraw completely at any point. If you withdraw, data collected up to that point will be retained because it is non-identifiable and we will be unable to determine which data are yours.</p>
+
+            <h4>Can I be removed from the research without my consent?</h4>
+            <p>You may be removed from the study without your approval for reasons including intentionally antagonistic interactions meant to disrupt the study or unacceptable behaviors towards researchers.</p>
+
+            <h4>Who do I talk to if I have questions?</h4>
+            <p>
+                For questions about this study, contact the research team at: <a href="mailto:aabl_participants@cs.tufts.edu">aabl_participants@cs.tufts.edu</a><br>
+                For concerns or research-related injuries, contact the principal investigator: Elaine Short, 617-627-2225, elaine.short@tufts.edu
+            </p>
+            <p>
+                An Institutional Review Board (IRB) is overseeing this research. If you have questions about your rights or wish to speak with someone other than the research team, contact:<br>
+                <strong>Tufts Social, Behavioral, and Educational Research IRB</strong><br>
+                75 Kneeland Street, Suite 623, Boston, MA 02111<br>
+                617.627.8804 | SBER@tufts.edu
+            </p>
+
+            <h4>Statement of Consent</h4>
+            <p>I have read and considered the information presented in this form. I confirm that I understand the purpose of the research and the study procedures. I understand that I may ask questions at any time and can withdraw my participation without prejudice. I confirm that I meet study criteria: I am 18 or over and I speak English fluently.</p>
         </div>
         
         <div class="checkbox-container">
             <input type="checkbox" id="consentCheck" />
-            <label for="consentCheck">I have read the above information and consent to participate in this study</label>
+            <label for="consentCheck">I consent to participate in this study</label>
         </div>
         
         <div class="info-box">
@@ -180,18 +253,14 @@
 
     <script src="js/data-collector.js"></script>
     <script>
-        // Wait for page to fully load
         window.addEventListener('DOMContentLoaded', () => {
             console.log('Index page loaded');
-            // window.location.hash = "start";
             console.log(window.location)
             const pageName = 'INDEX';
-            // Generate or retrieve user ID
             let userId = localStorage.getItem('studyUserId');
             console.log('Retrieved user ID from localStorage:', userId);
             
             if (!userId) {
-                // Generate new user ID: timestamp + random string
                 const timestamp = Date.now();
                 const randomStr = Math.random().toString(36).substring(2, 8);
                 userId = `user_${timestamp}_${randomStr}`;
@@ -200,33 +269,25 @@
                 localStorage.setItem('studyUserId', userId);
                 console.log('Saved user ID to localStorage');
 
-                // Verify it was saved
                 const savedId = localStorage.getItem('studyUserId');
                 console.log('Verification - retrieved user ID:', savedId);
-                
-
             } else {
                 console.log('Using existing user ID:', userId);
             }
             
-            // Display user ID
             document.getElementById('userId').textContent = userId;
             
-            // Handle consent checkbox
             const consentCheck = document.getElementById('consentCheck');
             const startButton = document.getElementById('startButton');
-            
             const ordering = document.getElementById('ordering');
 
             consentCheck.addEventListener('change', (e) => {
                 startButton.disabled = !e.target.checked;
             });
             
-            // Handle start button
             startButton.addEventListener('click', () => {
                 console.log('Start button clicked');
                 
-                // Record consent
                 if (typeof DataCollector !== 'undefined') {
                     DataCollector.recordEvent({
                         eventType: 'consent_given',
@@ -237,16 +298,9 @@
                     });
                 }
                 
-                // Navigate to survey
                 console.log('Navigating to survey.html');
                 window.location.href = 'survey.html#1'+ ',' + ordering.value;
             });
-            
-            // Record page visit
-            // if (typeof DataCollector !== 'undefined') {
-            //     DataCollector.recordPageVisit('index');
-            //     console.log('Page visit recorded for index');
-            // }
         });
     </script>
 </body>

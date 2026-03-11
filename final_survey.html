@@ -46,6 +46,12 @@
             margin-top: 0;
             color: #333;
         }
+
+        .question-group p.hint {
+            margin: 0 0 15px 0;
+            font-size: 13px;
+            color: #777;
+        }
         
         label {
             display: block;
@@ -63,46 +69,79 @@
             font-family: Arial, sans-serif;
             box-sizing: border-box;
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
         }
-        
-        .likert-scale {
-            display: flex;
-            justify-content: space-between;
-            margin: 15px 0;
-        }
-        
-        .likert-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
-        
-        .likert-option input[type="radio"] {
-            margin-bottom: 5px;
-        }
-        
-        .likert-option span {
-            font-size: 12px;
-            text-align: center;
-        }
-        
-        .radio-group {
+
+        /* Drag-and-drop ranking styles */
+        .ranking-list {
+            list-style: none;
+            padding: 0;
             margin: 10px 0;
         }
-        
-        .radio-group label {
+
+        .ranking-item {
             display: flex;
             align-items: center;
-            font-weight: normal;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 16px;
             margin: 8px 0;
-            cursor: pointer;
+            cursor: grab;
+            user-select: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            gap: 12px;
         }
-        
-        .radio-group input[type="radio"] {
-            margin-right: 10px;
-            width: auto;
+
+        .ranking-item:active {
+            cursor: grabbing;
+        }
+
+        .ranking-item.dragging {
+            opacity: 0.5;
+            border-color: #667eea;
+        }
+
+        .ranking-item.drag-over {
+            border-color: #667eea;
+            background: #f0f2ff;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.2);
+        }
+
+        .rank-number {
+            width: 28px;
+            height: 28px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .drag-handle {
+            color: #bbb;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .condition-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            flex: 1;
+        }
+
+        .rank-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+            padding: 0 4px;
         }
         
         button {
@@ -133,6 +172,17 @@
             margin-top: 20px;
             display: none;
         }
+
+        .error-banner {
+            background: #ffebee;
+            border: 1px solid #ef9a9a;
+            color: #c62828;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-top: 16px;
+            display: none;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -142,123 +192,52 @@
         </div>
         
         <h1>Post-Study Survey</h1>
-        <p>Thank you for completing the study! Please answer the questions below about your experiences</p>
+        <p>Thank you for completing the study! Please answer the questions below about your experiences.</p>
         
         <form id="surveyForm">
-            <!-- Experience with the System -->
+
+            <!-- Q1: Rank conditions easiest to hardest -->
             <div class="question-group">
-                <h3>Your Experience</h3>
-                
-                <label>How easy was it to use the system? <span class="required">*</span></label>
-                <div class="likert-scale">
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="1" required>
-                        <span>Very<br>difficult</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="2">
-                        <span>Somewhat<br>difficult</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="3">
-                        <span>Neutral</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="4">
-                        <span>Somewhat<br>easy</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="ease-of-use" value="5">
-                        <span>Very<br>easy</span>
-                    </div>
-                </div>
-                
-            </div>
-            
-            <!-- Trust & Satisfaction -->
-            <div class="question-group">
-                <h3>Trust & Satisfaction</h3>
-                
-                <label>How much did you trust the AI assistance? <span class="required">*</span></label>
-                <div class="likert-scale">
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="1" required>
-                        <span>No trust<br>at all</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="2">
-                        <span>Little<br>trust</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="3">
-                        <span>Moderate<br>trust</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="4">
-                        <span>High<br>trust</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="trust" value="5">
-                        <span>Complete<br>trust</span>
-                    </div>
-                </div>
-                
-                <label>How satisfied were you with the overall experience? <span class="required">*</span></label>
-                <div class="likert-scale">
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="1" required>
-                        <span>Very<br>dissatisfied</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="2">
-                        <span>Somewhat<br>dissatisfied</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="3">
-                        <span>Neutral</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="4">
-                        <span>Somewhat<br>satisfied</span>
-                    </div>
-                    <div class="likert-option">
-                        <input type="radio" name="satisfaction" value="5">
-                        <span>Very<br>satisfied</span>
-                    </div>
+                <h3>Condition Ranking <span class="required">*</span></h3>
+                <p class="hint">Drag and drop to rank the conditions from <strong>easiest (top)</strong> to <strong>hardest (bottom)</strong>.</p>
+                <ul class="ranking-list" id="rankingList">
+                    <!-- Items injected by JS based on URL -->
+                </ul>
+                <div class="rank-labels">
+                    <span>⬆ Easiest</span>
+                    <span>Hardest ⬇</span>
                 </div>
             </div>
-            
-            <!-- Open-ended Feedback -->
-            <!-- <div class="question-group">
-                <h3>Your Feedback</h3>
-                
-                <label>What did you like most about the AI assistance?</label>
-                <textarea id="liked-most" name="liked-most" placeholder="Your answer..."></textarea>
-                
-                <label>What did you like least about the AI assistance?</label>
-                <textarea id="liked-least" name="liked-least" placeholder="Your answer..."></textarea>
-                
-                <label>Do you have any suggestions for improvement?</label>
-                <textarea id="suggestions" name="suggestions" placeholder="Your answer..."></textarea>
-                
-                <label>Any other comments?</label>
-                <textarea id="other-comments" name="other-comments" placeholder="Your answer..."></textarea>
-            </div> -->
+
+            <!-- Q2: Hardest part (free response) -->
+            <div class="question-group">
+                <h3>Challenges</h3>
+                <label for="hardest-part">What was the hardest part of using these systems? <span class="required">*</span></label>
+                <textarea id="hardest-part" name="hardest-part" placeholder="Your answer..."></textarea>
+            </div>
+
+            <!-- Q3: Comments / reflections (free response) -->
+            <div class="question-group">
+                <h3>Comments &amp; Reflections</h3>
+                <label for="comments">Any other comments or reflections?</label>
+                <textarea id="comments" name="comments" placeholder="Your answer..."></textarea>
+            </div>
+
+            <div class="error-banner" id="errorBanner"></div>
             
             <button type="submit">Complete Study</button>
         </form>
         
         <div class="success-message" id="successMessage">
             <h2>Thank you for participating!</h2>
-            <p>Your responses have been recorded. Your data file will download automatically.</p>
+            <p>Your responses have been recorded.</p>
             <p>You may now close this window.</p>
         </div>
     </div>
 
-
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            // Get and display user ID
+            // ── User ID ──────────────────────────────────────────────
             const userId = localStorage.getItem('studyUserId');
             console.log('User ID from localStorage:', userId);
             
@@ -268,85 +247,125 @@
                 window.location.href = 'index.html';
                 return;
             }
-            
             document.getElementById('userId').textContent = userId;
-            
-            // Form submission
-            const form = document.getElementById('surveyForm');
-        
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Validate form
-            const isValid = true;//validateForm();
-            console.log('Form validation result:', isValid);
-            
-            if (!isValid) {
-                console.log('Form validation failed - check required fields');
-                alert('Please fill in all required fields before continuing.');
-                return;
+
+            // ── Parse condition letters from URL hash ────────────────
+            // Expected format: e.g.  #A,B,C  or  #A,B  etc.
+            // Falls back gracefully if hash is absent / different format.
+            const hash = window.location.hash.replace('#', '').trim();
+            let conditions = [];
+            if (hash) {
+                conditions = hash.split(',').map(s => s.trim()).filter(Boolean);
             }
-            
-            console.log('Form is valid, collecting responses...');
-            
-            // Collect all responses
-            const formData = new FormData(form);
-            const responses = {};
-            
-            responses.easeOfUse = parseInt(formData.get('ease-of-use'));
-            // responses.helpfulness = parseInt(formData.get('helpfulness'));
-            // responses.control = parseInt(formData.get('control'));
-            // responses.understanding = parseInt(formData.get('understanding'));
-            // responses.predictability = parseInt(formData.get('predictability'));
-            responses.trust = parseInt(formData.get('trust'));
-            responses.satisfaction = parseInt(formData.get('satisfaction'));
-            
-            // Open-ended responses
-            // responses.likedMost = formData.get('liked-most');
-            // responses.likedLeast = formData.get('liked-least');
-            // responses.suggestions = formData.get('suggestions');
-            // responses.otherComments = formData.get('other-comments');
-            
-            // Checkbox group - expectations
-            responses.expectations = formData.getAll('expectations');
 
-            console.log(responses)
-            // Storing an object
-            localStorage.setItem('final_responses', JSON.stringify(responses));
-            
-            // // 
-            // const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
-            // const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
-            // console.log("CONDITION NUM")
-            // console.log(condition_num)
-            // console.log(condition_order)
-            // save data to local storage
-            // const savedResponses = JSON.parse(localStorage.getItem('final_responses_'));
-            // // console.log(savedResponses); // Output: Alice
+            // If no conditions found, show a placeholder so the page isn't broken
+            if (conditions.length === 0) {
+                conditions = ['A', 'B', 'C']; // default fallback
+                console.warn('No conditions found in URL hash; using fallback:', conditions);
+            }
 
-            // const allLocalData = JSON.stringify(localStorage, null, 2);
-            // // console.log(allLocalData);
+            // ── Build drag-and-drop ranking list ─────────────────────
+            const list = document.getElementById('rankingList');
 
-            // // Download as JSON file
-            // const blob = new Blob([allLocalData], { type: 'application/json' });
-            // const url = URL.createObjectURL(blob);
-            // const a = document.createElement('a');
-            // a.href = url;
-            // a.download = `study_data_${userId}.json`;
-            // a.click();
-            // URL.revokeObjectURL(url);
+            function buildItems() {
+                list.innerHTML = '';
+                conditions.forEach((cond, idx) => {
+                    const li = document.createElement('li');
+                    li.className = 'ranking-item';
+                    li.draggable = true;
+                    li.dataset.condition = cond;
+                    li.innerHTML = `
+                        <span class="drag-handle">⠿</span>
+                        <span class="rank-number">${idx + 1}</span>
+                        <span class="condition-label">Condition ${cond}</span>
+                    `;
+                    list.appendChild(li);
+                });
+                attachDragListeners();
+            }
 
-            // // Clear local storage after download
-            // console.log("clearing local storage");
-            // localStorage.clear();
-            
-            // All done - move to "thank you" page
-            window.location.href = 'thank_you.html';
-            
-            
+            function updateRankNumbers() {
+                list.querySelectorAll('.ranking-item').forEach((item, idx) => {
+                    item.querySelector('.rank-number').textContent = idx + 1;
+                });
+            }
+
+            let dragSrc = null;
+
+            function attachDragListeners() {
+                list.querySelectorAll('.ranking-item').forEach(item => {
+                    item.addEventListener('dragstart', e => {
+                        dragSrc = item;
+                        item.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                    });
+                    item.addEventListener('dragend', () => {
+                        item.classList.remove('dragging');
+                        list.querySelectorAll('.ranking-item').forEach(i => i.classList.remove('drag-over'));
+                        updateRankNumbers();
+                    });
+                    item.addEventListener('dragover', e => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        if (item !== dragSrc) {
+                            list.querySelectorAll('.ranking-item').forEach(i => i.classList.remove('drag-over'));
+                            item.classList.add('drag-over');
+                        }
+                    });
+                    item.addEventListener('drop', e => {
+                        e.preventDefault();
+                        if (item !== dragSrc) {
+                            // Determine insertion position
+                            const items = [...list.querySelectorAll('.ranking-item')];
+                            const srcIdx = items.indexOf(dragSrc);
+                            const tgtIdx = items.indexOf(item);
+                            if (srcIdx < tgtIdx) {
+                                list.insertBefore(dragSrc, item.nextSibling);
+                            } else {
+                                list.insertBefore(dragSrc, item);
+                            }
+                        }
+                    });
+                });
+            }
+
+            buildItems();
+
+            // ── Form submission ───────────────────────────────────────
+            const form = document.getElementById('surveyForm');
+            const errorBanner = document.getElementById('errorBanner');
+
+            function showError(msg) {
+                errorBanner.textContent = msg;
+                errorBanner.style.display = 'block';
+                errorBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            form.addEventListener('submit', e => {
+                e.preventDefault();
+                errorBanner.style.display = 'none';
+
+                const hardestPart = document.getElementById('hardest-part').value.trim();
+                if (!hardestPart) {
+                    showError('Please describe the hardest part of using the systems before continuing.');
+                    return;
+                }
+
+                // Collect ranking order
+                const ranking = [...list.querySelectorAll('.ranking-item')].map(i => i.dataset.condition);
+
+                const responses = {
+                    conditionRanking: ranking,          // e.g. ["B","A","C"] easiest→hardest
+                    hardestPart:      hardestPart,
+                    comments:         document.getElementById('comments').value.trim(),
+                };
+
+                console.log('Survey responses:', responses);
+                localStorage.setItem('final_responses', JSON.stringify(responses));
+
+                window.location.href = 'thank_you.html';
+            });
         });
-        }); // Close DOMContentLoaded
-        
     </script>
 </body>
 </html>

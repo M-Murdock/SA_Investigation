@@ -519,6 +519,23 @@ class DotSimulator {
         this.backgroundImages = {};
         this.agentImage = null;
 
+        // Ingredient spoon images: map ingredient filename -> spoon image object
+        this.ingredientSpoonImages = {};
+        // Bowl overlay images: map ingredient filename -> bowl overlay image object
+        this.bowlIngredientImages = {};
+        // Deposited ingredients tracking
+        this.depositedIngredients = [];
+        // Ingredient positions for proximity detection (populated in loadBackgroundImages)
+        this.ingredientPositions = [];
+        // Currently active spoon image (null = use default agentImage)
+        this.activeSpoonImage = null;
+        // Proximity threshold (pixels) to trigger ingredient pickup
+        this.INGREDIENT_PROXIMITY = 80;
+        // Proximity threshold for bowl (larger since bowl is 300px wide)
+        this.BOWL_PROXIMITY = 120;
+        // Bowl position (populated in loadBackgroundImages)
+        this.bowlPosition = null;
+
         // Keyboard state
         this.keys = {};
         
@@ -563,6 +580,7 @@ class DotSimulator {
         console.log(this.inferenceType);
         console.log(this.arbitrationType)
     }
+
     // -------------------------
     // Background image loading
     // -------------------------
@@ -571,6 +589,23 @@ class DotSimulator {
          * Load background images and positions from data structure.
          * Expected format: [{filename, x, y, xscale, yscale}, ...]
          */
+
+        // Mapping from ingredient filename to spoon image file
+        const INGREDIENT_SPOON_MAP = {
+            'sugar.png':           'sugar_spoon.png',
+            'milk_carton.png':     'milk_spoon.png',
+            'chocolate_chips.png': 'chocolate_chip_spoon.png',
+            'egg.png':             'egg_spoon.png',
+        };
+
+        // Mapping from ingredient filename to bowl overlay image file
+        const INGREDIENT_BOWL_MAP = {
+            'sugar.png':           'bowl_imgs/sugar_bowl.png',
+            'milk_carton.png':     'bowl_imgs/milk_bowl.png',
+            'chocolate_chips.png': 'bowl_imgs/chocolate_bowl.png',
+            'egg.png':             'bowl_imgs/yolk_bowl.png',
+        };
+
         for (const bgConfig of backgroundData) {
             const filename = bgConfig.filename;
             const x = bgConfig.x;
@@ -616,17 +651,70 @@ class DotSimulator {
                 console.warn(`Warning: background image not found: ${filename}`);
             };
             img.src = `background_images/${filename}`;
+
+            // Store bowl position for deposit detection
+            if (filename === 'mixing_bowl.png') {
+                this.bowlPosition = { x: parseFloat(x), y: parseFloat(y) };
+            }
+
+            // If this is an ingredient, store its position and load its spoon + bowl overlay images
+            if (INGREDIENT_SPOON_MAP[filename]) {
+                // Load spoon image
+                const spoonFile = INGREDIENT_SPOON_MAP[filename];
+                const spoonImg = new Image();
+                spoonImg.onload = () => {
+                    this.ingredientSpoonImages[filename] = {
+                        img: spoonImg,
+                        width: xscale,
+                        height: yscale,
+                        loaded: true
+                    };
+                    console.log(`Ingredient spoon image loaded: ${spoonFile}`);
+                };
+                spoonImg.onerror = () => {
+                    console.warn(`Warning: ingredient spoon image not found: ${spoonFile}`);
+                };
+                spoonImg.src = `background_images/agent_imgs/${spoonFile}`;
+
+                // Load bowl overlay image for this ingredient
+                const bowlOverlayFile = INGREDIENT_BOWL_MAP[filename];
+                if (bowlOverlayFile) {
+                    const bowlImg = new Image();
+                    bowlImg.onload = () => {
+                        this.bowlIngredientImages[filename] = {
+                            img: bowlImg,
+                            width: xscale,
+                            height: yscale,
+                            loaded: true
+                        };
+                        console.log(`Bowl overlay image loaded: ${bowlOverlayFile}`);
+                    };
+                    bowlImg.onerror = () => {
+                        console.warn(`Warning: bowl overlay image not found: ${bowlOverlayFile}`);
+                    };
+                    bowlImg.src = `background_images/${bowlOverlayFile}`;
+                }
+
+                // Store ingredient position for proximity detection
+                this.ingredientPositions.push({
+                    filename: filename,
+                    x: parseFloat(x),
+                    y: parseFloat(y)
+                });
+            }
         }
     }
 
     drawAgent(x, y) {
-        if (this.agentImage && this.agentImage.loaded) {
+        // Use ingredient spoon image if agent is near an ingredient, else default agent image
+        const imageToUse = this.activeSpoonImage || this.agentImage;
+        if (imageToUse && imageToUse.loaded) {
             const imgRect = {
-                x: x - this.agentImage.width / 2,
-                y: y - this.agentImage.height / 2
+                x: x - imageToUse.width / 2,
+                y: y - imageToUse.height / 2
             };
-            this.ctx.drawImage(this.agentImage.img, imgRect.x, imgRect.y, 
-                             this.agentImage.width, this.agentImage.height);
+            this.ctx.drawImage(imageToUse.img, imgRect.x, imgRect.y, 
+                             imageToUse.width, imageToUse.height);
         }
     }
 
@@ -645,6 +733,22 @@ class DotSimulator {
                 this.ctx.globalAlpha = 0.9;
                 this.ctx.drawImage(data.image, imgRect.x, imgRect.y, data.width, data.height);
                 this.ctx.restore();
+            }
+        }
+
+        // Draw deposited ingredient overlays on top of the bowl
+        if (this.bowlPosition && this.depositedIngredients.length > 0) {
+            for (const filename of this.depositedIngredients) {
+                const overlay = this.bowlIngredientImages[filename];
+                if (overlay && overlay.loaded) {
+                    this.ctx.drawImage(
+                        overlay.img,
+                        this.bowlPosition.x - overlay.width / 2,
+                        this.bowlPosition.y - overlay.height / 2,
+                        overlay.width,
+                        overlay.height
+                    );
+                }
             }
         }
     }
@@ -692,10 +796,43 @@ class DotSimulator {
         this.ctx.fillStyle = this.BLACK;
         this.ctx.fillRect(0, 0, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
 
-        // Draw backgrounds FIRST
+        // Draw backgrounds FIRST (includes deposited ingredient overlays)
         this.drawBackgrounds();
 
-        // Draw the dot
+        // Check ingredient proximity — pick up ingredient (sticky: only changes on trigger)
+        for (const ingredient of this.ingredientPositions) {
+            const dx = this.dotX - ingredient.x;
+            const dy = this.dotY - ingredient.y;
+            if (Math.sqrt(dx * dx + dy * dy) < this.INGREDIENT_PROXIMITY) {
+                const spoonImg = this.ingredientSpoonImages[ingredient.filename];
+                if (spoonImg && spoonImg.loaded) {
+                    this.activeSpoonImage = spoonImg;
+                }
+                break;
+            }
+        }
+
+        // Check bowl proximity — deposit ingredient and revert to plain spoon
+        if (this.bowlPosition && this.activeSpoonImage) {
+            const dx = this.dotX - this.bowlPosition.x;
+            const dy = this.dotY - this.bowlPosition.y;
+            if (Math.sqrt(dx * dx + dy * dy) < this.BOWL_PROXIMITY) {
+                // Identify which ingredient is on the spoon and record the deposit
+                for (const ingredient of this.ingredientPositions) {
+                    const spoonImg = this.ingredientSpoonImages[ingredient.filename];
+                    if (spoonImg === this.activeSpoonImage) {
+                        if (!this.depositedIngredients.includes(ingredient.filename)) {
+                            this.depositedIngredients.push(ingredient.filename);
+                            console.log(`Deposited ingredient: ${ingredient.filename}`);
+                        }
+                        break;
+                    }
+                }
+                this.activeSpoonImage = null; // Revert to plain spoon (default agentImage)
+            }
+        }
+
+        // Draw the dot / agent
         const dotScreenY = this.dotY;
         if (this.AGENT_IMG_TRUE) {
             this.drawAgent(this.dotX, dotScreenY);
@@ -770,24 +907,6 @@ class DotSimulator {
         document.addEventListener('keyup', (e) => {
             this.keys[e.key] = false;
         });
-
-        // document.getElementById('inferenceType').addEventListener('change', (e) => {
-        //     this.INFERENCE_TYPE = e.target.value;
-        //     this.reset();
-        // });
-
-        // document.getElementById('arbitrationType').addEventListener('change', (e) => {
-        //     this.ARBITRATION_TYPE = e.target.value;
-        // });
-
-        // document.getElementById('gammaSlider').addEventListener('input', (e) => {
-        //     this.GAMMA = parseFloat(e.target.value);
-        //     document.getElementById('gammaValue').textContent = this.GAMMA.toFixed(1);
-        // });
-
-        // document.getElementById('resetBtn').addEventListener('click', () => {
-        //     this.reset();
-        // });
     }
 
     reset() {
@@ -802,8 +921,6 @@ class DotSimulator {
     updateUI() {
         if (this.prob.length > 0) {
             const probText = this.prob.map((p, i) => `P${i + 1}: ${(p * 100).toFixed(1)}%`).join(', ');
-            // document.getElementById('probabilities').textContent = `Policy Probabilities: ${probText}`;
-            // document.getElementById('robotConfidence').textContent = `Robot Confidence: ${(this.robotConfidence * 100).toFixed(1)}%`;
         }
     }
 
@@ -995,10 +1112,6 @@ async function main() {
         {filename: 'mixing_bowl.png', x: 300, y: 300, xscale: 300, yscale: 300},
         {filename: 'spoon.png', x: 'None', y: 'None', xscale:150, yscale: 150}
     ];
-    // "bayesian", "maxent", "crf"
-    // simulator.INFERENCE_TYPE = "maxent";
-    // "linear", "probabilistic", "onlyuser"
-    // simulator.ARBITRATION_TYPE = "linear";
     
     simulator.loadBackgroundImages(backgroundConfig);
     simulator.initializePolicies(policies);
