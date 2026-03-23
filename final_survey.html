@@ -71,13 +71,13 @@
             gap: 8px;
         }
 
-        .user-badge::before {
+        /* .user-badge::before {
             content: '';
             width: 7px; height: 7px;
             border-radius: 50%;
             background: #4caf87;
             flex-shrink: 0;
-        }
+        } */
 
         /* Main */
         .main {
@@ -142,6 +142,20 @@
             padding: 22px 28px 24px;
         }
 
+        .required-badge {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--ink-light);
+            letter-spacing: 0.2px;
+            flex-shrink: 0;
+        }
+
+        .required-badge span {
+            color: var(--accent);
+            margin-right: 2px;
+        }
+        
         .question-prompt {
             font-size: 14px;
             color: var(--ink-mid);
@@ -394,6 +408,7 @@
             <div class="section-header">
                 <span class="section-tag">Ranking</span>
                 <span class="section-title">Condition difficulty</span>
+                <span class="required-badge"><span>*</span>Required</span>
             </div>
             <div class="section-body">
                 <p class="question-prompt">Drag and drop to rank the conditions from <strong>easiest (top)</strong> to <strong>hardest (bottom)</strong>.</p>
@@ -411,6 +426,7 @@
             <div class="section-header">
                 <span class="section-tag">Challenges</span>
                 <span class="section-title">What was the hardest part?</span>
+                <span class="required-badge"><span>*</span>Required</span>
             </div>
             <div class="section-body">
                 <p class="question-prompt">Describe the hardest part of using these systems.</p>
@@ -458,11 +474,16 @@
 
         // Parse conditions from URL hash
         const hash = window.location.hash.replace('#', '').trim();
-        let conditions = hash ? hash.split(',').map(s => s.trim()).filter(Boolean) : [];
-        if (conditions.length === 0) {
-            conditions = ['A', 'B', 'C'];
-            console.warn('No conditions in URL hash; using fallback:', conditions);
+        conditions = [];
+        for (let i = 1; i < hash.length+1; i++) {
+            conditions.push(i)
         }
+        // let conditions = hash ? hash.split(',').map(s => s.trim()).filter(Boolean) : [];
+        // if (conditions.length === 0) {
+        //     conditions = ['1', '2', '3'];
+        //     console.warn('No conditions in URL hash; using fallback:', conditions);
+        // }
+        
 
         // Build ranking list
         const list = document.getElementById('rankingList');

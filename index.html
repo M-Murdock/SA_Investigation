@@ -4,304 +4,567 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shared Autonomy Study</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .container {
-            max-width: 800px;
-            background: white;
-            color: #333;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-        
-        h1 {
-            margin-top: 0;
-            color: #667eea;
-        }
-        
-        .content {
-            line-height: 1.6;
-            margin: 20px 0;
-        }
-        
-        .consent-box {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-left: 4px solid #667eea;
-        }
-        
-        .consent-box h3 {
-            margin-top: 0;
+        :root {
+            --ink: #1a1a2e;
+            --ink-mid: #4a4a6a;
+            --ink-light: #8888aa;
+            --accent: #e85d4a;
+            --accent-soft: #fff0ee;
+            --surface: #faf9f7;
+            --surface-2: #f2f0ec;
+            --border: #e0ddd8;
+            --white: #ffffff;
+            --error: #c0392b;
+            --error-soft: #fdf0ef;
         }
 
-        .consent-box h4 {
-            margin-top: 16px;
-            margin-bottom: 4px;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 0 0 80px;
         }
+
+        .page-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .page-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--ink);
+            letter-spacing: -0.3px;
+        }
+
+        .page-header p {
+            font-size: 13px;
+            color: var(--ink-light);
+            margin-top: 3px;
+            font-weight: 300;
+        }
+
+        .main {
+            max-width: 740px;
+            margin: 0 auto;
+            padding: 48px 24px 0;
+        }
+
+        .intro-text {
+            font-size: 15px;
+            color: var(--ink-mid);
+            line-height: 1.7;
+            font-weight: 300;
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .card-header {
+            padding: 18px 28px 14px;
+            border-bottom: 1px solid var(--surface-2);
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .card-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--ink);
+        }
+
+        .card-body {
+            padding: 22px 28px 24px;
+        }
+
+        .user-id-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .user-id-label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--ink-light);
+        }
+
+        .user-id-value {
+            font-family: 'DM Sans', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-mid);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* .user-id-value::before {
+            content: '';
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #4caf87;
+        } */
+
+        /* Ordering field */
+        .ordering-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .ordering-row.error {
+            border-color: var(--error);
+            background: var(--error-soft);
+        }
+
+        .ordering-row label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--ink-light);
+            white-space: nowrap;
+            padding-top: 10px;
+        }
+
+        .ordering-row.error label { color: var(--error); }
+
+        .ordering-field-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        #ordering {
+            padding: 8px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--ink);
+            background: var(--surface);
+            outline: none;
+            transition: border-color 0.15s;
+            max-width: 260px;
+        }
+
+        #ordering:focus { border-color: var(--accent); background: var(--white); }
+        .ordering-row.error #ordering { border-color: var(--error); }
+
+        .ordering-error-msg {
+            font-size: 12px;
+            color: var(--error);
+            display: none;
+        }
+
+        .ordering-row.error .ordering-error-msg { display: block; }
+
+        .consent-body {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--ink-mid);
+            font-weight: 300;
+        }
+
+        .pi-info {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--ink-mid);
+            margin-bottom: 18px;
+        }
+
+        .pi-info strong { color: var(--ink); font-weight: 500; }
+        .consent-body p { margin-bottom: 12px; }
+        .consent-body strong { color: var(--ink); font-weight: 500; }
 
         .key-info-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 16px 0;
-            border: 1px solid #667eea;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin: 16px 0 20px;
+            font-size: 13.5px;
         }
 
         .key-info-table th {
-            background: #667eea;
-            color: white;
-            padding: 10px 14px;
+            background: var(--ink);
+            color: var(--white);
+            padding: 10px 16px;
             text-align: left;
-            font-size: 15px;
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 0.3px;
         }
 
         .key-info-table td {
-            padding: 12px 14px;
+            padding: 16px;
             vertical-align: top;
-            line-height: 1.6;
-            border-top: 1px solid #ddd;
-        }
-
-        .key-info-table td p {
-            margin: 6px 0;
-        }
-
-        .pi-info {
-            background: #eef0fb;
-            border-radius: 6px;
-            padding: 10px 16px;
-            margin-bottom: 16px;
-            font-size: 14px;
             line-height: 1.7;
+            color: var(--ink-mid);
+            font-weight: 300;
         }
 
-        .checkbox-container {
+        .key-info-table td p { margin: 0 0 8px; }
+        .key-info-table td p:last-child { margin-bottom: 0; }
+
+        .consent-section {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .consent-section h4 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .checkbox-card {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
-            margin: 20px 0;
-        }
-        
-        .checkbox-container input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
+            gap: 14px;
             cursor: pointer;
-        }
-        
-        .checkbox-container label {
-            font-size: 16px;
-            cursor: pointer;
-        }
-        
-        button {
-            padding: 15px 40px;
-            font-size: 18px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-            width: 100%;
-            margin-top: 20px;
-        }
-        
-        button:hover:not(:disabled) {
-            background: #5568d3;
-        }
-        
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .user-id-display {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        .info-box {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
+            transition: border-color 0.15s, background 0.15s;
+            margin-bottom: 12px;
         }
 
-        #ordering {
-            width: 40%;
-            padding: 12px;
-            background: #fff3cd;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
+        .checkbox-card:has(input:checked) {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .checkbox-card input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checkbox-card label {
+            font-size: 14px;
+            color: var(--ink-mid);
+            cursor: pointer;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .checkbox-card:has(input:checked) label { color: var(--ink); font-weight: 500; }
+
+        .note-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 13px;
+            color: var(--ink-light);
+            line-height: 1.55;
+            font-weight: 300;
+            margin-bottom: 12px;
+        }
+
+        .note-card strong { color: var(--ink-mid); font-weight: 500; }
+
+        .submit-area {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 28px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .submit-note {
+            font-size: 13px;
+            color: var(--ink-light);
+            font-weight: 300;
+        }
+
+        button#startButton {
+            padding: 13px 32px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button#startButton::after { content: '→'; font-size: 17px; }
+
+        button#startButton:hover:not(:disabled) {
+            background: #d44a38;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(232,93,74,0.35);
+        }
+
+        button#startButton:disabled {
+            background: var(--border);
+            color: var(--ink-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        @media (max-width: 600px) {
+            .page-header { padding: 18px 20px; }
+            .main { padding: 28px 16px 0; }
+            .card-body, .card-header { padding-left: 18px; padding-right: 18px; }
+            .submit-area { flex-direction: column; gap: 16px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to the Shared Autonomy Study</h1>
-        
-        <div class="content">
-            <p>Thank you for participating in our research on human-AI collaboration and shared autonomy systems.</p>
 
-            <div class="info-box">
-                <strong>Study Ordering (leave blank):</strong> <input type="textbox" id="ordering" />
+<header class="page-header">
+    <h1>Shared Autonomy Study</h1>
+    <p>Tufts University — Human-AI Collaboration Research</p>
+</header>
+
+<main class="main">
+
+    <p class="intro-text">
+        Thank you for participating in our research on human-AI collaboration and shared autonomy systems.
+        Please read the consent form below carefully before beginning.
+    </p>
+
+    <!-- User ID -->
+    <div class="user-id-card">
+        <span class="user-id-label">Your User ID</span>
+        <span class="user-id-value"><span id="userId">Loading…</span></span>
+    </div>
+
+    <!-- Ordering (required) -->
+    <div class="ordering-row" id="orderingRow">
+        <label for="ordering">Study Ordering (to be filled out by experimenter) <span style="color:var(--accent);font-style:normal">*</span></label>
+        <div class="ordering-field-wrap">
+            <input type="text" id="ordering" autocomplete="off" placeholder="Enter study conditions…" />
+            <span class="ordering-error-msg">Study conditions are required before you can begin.</span>
+        </div>
+    </div>
+
+    <!-- Consent -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Consent to Participate</span>
+        </div>
+        <div class="card-body">
+            <div class="consent-body">
+
+                <p><strong>Title of the Study:</strong> Explainability for Shared Autonomy</p>
+
+                <div class="pi-info">
+                    <strong>Principal Investigator:</strong> Elaine Short — Assistant Professor, Department of Computer Science<br>
+                    <strong>Phone:</strong> 617-627-2225 &nbsp;·&nbsp;
+                    <strong>Email:</strong> <a href="mailto:elaine.short@tufts.edu">elaine.short@tufts.edu</a>
+                </div>
+
+                <p>You are being asked to volunteer in a research study. Please read the information below carefully before deciding whether to participate. Please ask questions about anything you do not understand.</p>
+
+                <table class="key-info-table">
+                    <thead>
+                        <tr><th>Key Information for You to Consider</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>
+                            <p><strong>Statement of Research:</strong> You are being asked to volunteer for a research study. It is up to you whether you choose to participate or not. There will be no penalty or loss of benefits to which you are otherwise entitled if you choose not to participate or discontinue participation.</p>
+                            <p><strong>Purpose:</strong> The purpose of this research is to evaluate how participants understand and interact and collaborate with an artificial intelligence (AI) system.</p>
+                            <p><strong>Duration:</strong> Your participation is expected to last approximately 30 minutes.</p>
+                            <p><strong>Procedures and Activities:</strong> You will be asked to provide input to a computer simulation using a keyboard. You will also be asked to provide overall feedback on the interaction via questionnaires.</p>
+                            <p><strong>Risks:</strong> The risks or discomforts associated with this research are minimal.</p>
+                            <p><strong>Benefits:</strong> There may be no personal benefit from your participation, but there may be potential benefits to improving human-robot collaborations.</p>
+                        </td></tr>
+                    </tbody>
+                </table>
+
+                <div class="consent-section">
+                    <h4>What is this study about?</h4>
+                    <p>Researchers at Tufts University are conducting a study on how people understand and interact with AI in collaborative settings. You are being asked to participate because you have shown interest in the study. Your participation in the study is expected to last 30 minutes.</p>
+                </div>
+
+                <div class="consent-section">
+                    <h4>What will happen during this research?</h4>
+                    <p>If you agree to participate, you will do simple tasks — like moving a virtual spoon to an ingredient — in an online AI-driven cooking simulation using arrow keys on a keyboard. While you do the task, you may receive help from the online system. You will complete the task over 6 rounds; in each round the task and environment remain the same, but how the system attempts to help you will change. Following each round, you will answer a survey assessing your understanding of the agent's assistance and goals. You will also answer questions about your general background and your experience performing the tasks.</p>
+                </div>
+
+                <div class="consent-section">
+                    <h4>What will you do to protect my privacy?</h4>
+                    <p>We will take measures to protect your privacy and confidentiality. We will not collect your name or any other personally identifiable data. All data will be stored on a secure server with access limited only to the researchers of this study, except as required by individuals and organizations responsible for conducting or monitoring this research (including the Tufts SBER IRB). The results of the study may be published.</p>
+                </div>
+
+                <div class="consent-section">
+                    <h4>What is the compensation for the research?</h4>
+                    <p>You will receive compensation in the form of snacks or candy, provided after each session.</p>
+                </div>
+
+                <div class="consent-section">
+                    <h4>Is my participation voluntary, and can I withdraw?</h4>
+                    <p>Taking part in this research study is your decision. You do not have to take part, but if you do, you can stop at any time without penalty and without affecting your relationship with Tufts University, Dr. Elaine Short, or the research team. You have the right to choose not to participate in any study activity or to withdraw completely at any point. If you withdraw, data collected up to that point will be retained because it is non-identifiable and we will be unable to determine which data are yours.</p>
+                </div>
+
+                <div class="consent-section">
+                    <h4>Can I be removed from the research without my consent?</h4>
+                    <p>You may be removed from the study without your approval for reasons including intentionally antagonistic interactions meant to disrupt the study or unacceptable behaviors towards researchers.</p>
+                </div>
+
+                <div class="consent-section">
+                    <h4>Who do I talk to if I have questions?</h4>
+                    <p>For questions about this study, contact the research team at: <a href="mailto:aabl_participants@cs.tufts.edu">aabl_participants@cs.tufts.edu</a><br>
+                    For concerns or research-related injuries, contact the principal investigator: Elaine Short, 617-627-2225, <a href="mailto:elaine.short@tufts.edu">elaine.short@tufts.edu</a></p>
+                    <p>An Institutional Review Board (IRB) is overseeing this research. If you have questions about your rights or wish to speak with someone other than the research team, contact:<br>
+                    <strong>Tufts Social, Behavioral, and Educational Research IRB</strong><br>
+                    75 Kneeland Street, Suite 623, Boston, MA 02111<br>
+                    617.627.8804 · <a href="mailto:SBER@tufts.edu">SBER@tufts.edu</a></p>
+                </div>
+
+                <div class="consent-section">
+                    <h4>Statement of Consent</h4>
+                    <p>I have read and considered the information presented in this form. I confirm that I understand the purpose of the research and the study procedures. I understand that I may ask questions at any time and can withdraw my participation without prejudice. I confirm that I meet study criteria: I am 18 or over and I speak English fluently.</p>
+                </div>
+
             </div>
-            
-            <div class="user-id-display">
-                Your User ID: <span id="userId">Loading...</span>
-            </div>
-            <!-- study condition------------ -->
-            <span id="study_condition"></span>
         </div>
-        
-        <div class="consent-box">
-            <h3>Tufts University — Consent to Participate in a Research Study</h3>
-            <p><strong>Title of the Study:</strong> Explainability for Shared Autonomy</p>
+    </div>
 
-            <div class="pi-info">
-                <strong>Principal Investigator:</strong> Elaine Short — Assistant Professor, Department of Computer Science<br>
-                <strong>Phone:</strong> 617-627-2225<br>
-                <strong>Email:</strong> elaine.short@tufts.edu
-            </div>
+    <!-- Consent checkbox -->
+    <div class="checkbox-card">
+        <input type="checkbox" id="consentCheck" />
+        <label for="consentCheck">I have read the consent form and agree to participate in this study</label>
+    </div>
 
-            <p>You are being asked to volunteer in a research study. Please read the information below carefully before deciding whether to participate. Please ask questions about anything you do not understand.</p>
+    <!-- Note -->
+    <div class="note-card">
+        <strong>Note:</strong> Please complete the study in one sitting. Your User ID will be used to link your responses across all parts of the study.
+    </div>
 
-            <table class="key-info-table">
-                <thead>
-                    <tr><th>Key Information for You to Consider</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>
-                        <p><strong>Statement of Research:</strong> You are being asked to volunteer for a research study. It is up to you whether you choose to participate or not. There will be no penalty or loss of benefits to which you are otherwise entitled if you choose not to participate or discontinue participation.</p>
-                        <p><strong>Purpose:</strong> The purpose of this research is to evaluate how participants understand and interact and collaborate with an artificial intelligence (AI) system.</p>
-                        <p><strong>Duration:</strong> Your participation is expected to last approximately 30 minutes.</p>
-                        <p><strong>Procedures and Activities:</strong> You will be asked to provide input to a computer simulation using a keyboard. You will also be asked to provide overall feedback on the interaction via questionnaires.</p>
-                        <p><strong>Risks:</strong> The risks or discomforts associated with this research are minimal.</p>
-                        <p><strong>Benefits:</strong> There may be no personal benefit from your participation, but there may be potential benefits to improving human-robot collaborations.</p>
-                    </td></tr>
-                </tbody>
-            </table>
-
-            <h4>What is this study about?</h4>
-            <p>Researchers at Tufts University are conducting a study on how people understand and interact with AI in collaborative settings. You are being asked to participate because you have shown interest in the study. Your participation in the study is expected to last 30 minutes.</p>
-
-            <h4>What will happen during this research?</h4>
-            <p>If you agree to participate, you will do simple tasks — like moving a virtual spoon to an ingredient — in an online AI-driven cooking simulation using arrow keys on a keyboard. While you do the task, you may receive help from the online system. You will complete the task over 6 rounds; in each round the task and environment remain the same, but how the system attempts to help you will change. Following each round, you will answer a survey assessing your understanding of the agent's assistance and goals. You will also answer questions about your general background and your experience performing the tasks.</p>
-
-            <h4>What will you do to protect my privacy?</h4>
-            <p>We will take measures to protect your privacy and confidentiality. We will not collect your name or any other personally identifiable data. All data will be stored on a secure server with access limited only to the researchers of this study, except as required by individuals and organizations responsible for conducting or monitoring this research (including the Tufts SBER IRB). The results of the study may be published.</p>
-
-            <h4>What is the compensation for the research?</h4>
-            <p>You will receive compensation in the form of snacks or candy, provided after each session.</p>
-
-            <h4>Is my participation voluntary, and can I withdraw?</h4>
-            <p>Taking part in this research study is your decision. You do not have to take part, but if you do, you can stop at any time without penalty and without affecting your relationship with Tufts University, Dr. Elaine Short, or the research team. You have the right to choose not to participate in any study activity or to withdraw completely at any point. If you withdraw, data collected up to that point will be retained because it is non-identifiable and we will be unable to determine which data are yours.</p>
-
-            <h4>Can I be removed from the research without my consent?</h4>
-            <p>You may be removed from the study without your approval for reasons including intentionally antagonistic interactions meant to disrupt the study or unacceptable behaviors towards researchers.</p>
-
-            <h4>Who do I talk to if I have questions?</h4>
-            <p>
-                For questions about this study, contact the research team at: <a href="mailto:aabl_participants@cs.tufts.edu">aabl_participants@cs.tufts.edu</a><br>
-                For concerns or research-related injuries, contact the principal investigator: Elaine Short, 617-627-2225, elaine.short@tufts.edu
-            </p>
-            <p>
-                An Institutional Review Board (IRB) is overseeing this research. If you have questions about your rights or wish to speak with someone other than the research team, contact:<br>
-                <strong>Tufts Social, Behavioral, and Educational Research IRB</strong><br>
-                75 Kneeland Street, Suite 623, Boston, MA 02111<br>
-                617.627.8804 | SBER@tufts.edu
-            </p>
-
-            <h4>Statement of Consent</h4>
-            <p>I have read and considered the information presented in this form. I confirm that I understand the purpose of the research and the study procedures. I understand that I may ask questions at any time and can withdraw my participation without prejudice. I confirm that I meet study criteria: I am 18 or over and I speak English fluently.</p>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="consentCheck" />
-            <label for="consentCheck">I consent to participate in this study</label>
-        </div>
-        
-        <div class="info-box">
-            <strong>Note:</strong> Please complete the study in one sitting. Your User ID will be used to link your responses across all parts of the study.
-        </div>
-        
+    <!-- Submit -->
+    <div class="submit-area">
+        <p class="submit-note" id="submitNote">Enter study conditions and consent to begin.</p>
         <button id="startButton" disabled>Begin Study</button>
     </div>
 
-    <script src="js/data-collector.js"></script>
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('Index page loaded');
-            console.log(window.location)
-            const pageName = 'INDEX';
-            let userId = localStorage.getItem('studyUserId');
-            console.log('Retrieved user ID from localStorage:', userId);
-            
-            if (!userId) {
-                const timestamp = Date.now();
-                const randomStr = Math.random().toString(36).substring(2, 8);
-                userId = `user_${timestamp}_${randomStr}`;
-                console.log('Generated new user ID:', userId);
-                
-                localStorage.setItem('studyUserId', userId);
-                console.log('Saved user ID to localStorage');
+</main>
 
-                const savedId = localStorage.getItem('studyUserId');
-                console.log('Verification - retrieved user ID:', savedId);
+<script src="js/data-collector.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const pageName = 'INDEX';
+        let userId = localStorage.getItem('studyUserId');
+
+        if (!userId) {
+            const timestamp = Date.now();
+            const randomStr = Math.random().toString(36).substring(2, 8);
+            userId = `user_${timestamp}_${randomStr}`;
+            localStorage.setItem('studyUserId', userId);
+        }
+
+        document.getElementById('userId').textContent = userId;
+
+        const consentCheck = document.getElementById('consentCheck');
+        const startButton  = document.getElementById('startButton');
+        const ordering     = document.getElementById('ordering');
+        const orderingRow  = document.getElementById('orderingRow');
+        const submitNote   = document.getElementById('submitNote');
+
+        function updateButton() {
+            const hasOrdering = ordering.value.trim() !== '';
+            const hasConsent  = consentCheck.checked;
+            startButton.disabled = !(hasOrdering && hasConsent);
+
+            if (!hasOrdering && !hasConsent) {
+                submitNote.textContent = 'Enter study conditions and consent to begin.';
+            } else if (!hasOrdering) {
+                submitNote.textContent = 'Study conditions are required.';
+            } else if (!hasConsent) {
+                submitNote.textContent = 'You must consent before beginning.';
             } else {
-                console.log('Using existing user ID:', userId);
+                localStorage.setItem('study_conditions', JSON.stringify(ordering.value));
+                submitNote.textContent = 'Ready to begin.';
             }
-            
-            document.getElementById('userId').textContent = userId;
-            
-            const consentCheck = document.getElementById('consentCheck');
-            const startButton = document.getElementById('startButton');
-            const ordering = document.getElementById('ordering');
+        }
 
-            consentCheck.addEventListener('change', (e) => {
-                startButton.disabled = !e.target.checked;
-            });
-            
-            startButton.addEventListener('click', () => {
-                console.log('Start button clicked');
-                
-                if (typeof DataCollector !== 'undefined') {
-                    DataCollector.recordEvent({
-                        eventType: 'consent_given',
-                        timestamp: Date.now(),
-                        data: {
-                            consented: true
-                        }
-                    });
-                }
-                
-                console.log('Navigating to survey.html');
-                window.location.href = 'survey.html#1'+ ',' + ordering.value;
-            });
+        consentCheck.addEventListener('change', updateButton);
+
+        ordering.addEventListener('input', () => {
+            orderingRow.classList.remove('error');
+            updateButton();
         });
-    </script>
+
+        startButton.addEventListener('click', () => {
+            // Hard guard in case button state is out of sync
+            if (ordering.value.trim() === '') {
+                orderingRow.classList.add('error');
+                ordering.focus();
+                return;
+            }
+
+            if (typeof DataCollector !== 'undefined') {
+                DataCollector.recordEvent({
+                    eventType: 'consent_given',
+                    timestamp: Date.now(),
+                    data: { consented: true }
+                });
+            }
+            window.location.href = 'survey.html#1' + ',' + ordering.value.trim();
+        });
+    });
+</script>
 </body>
 </html>

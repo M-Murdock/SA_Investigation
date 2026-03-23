@@ -57,7 +57,36 @@
             z-index: 50;
         }
 
-        .header-left h1 {
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: var(--white);
+            color: var(--ink-mid);
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .back-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .header-titles h1 {
             font-family: 'DM Serif Display', serif;
             font-size: 22px;
             font-weight: 400;
@@ -65,7 +94,7 @@
             letter-spacing: -0.3px;
         }
 
-        .header-left p {
+        .header-titles p {
             font-size: 13px;
             color: var(--ink-light);
             margin-top: 2px;
@@ -84,14 +113,6 @@
             align-items: center;
             gap: 8px;
         }
-
-        /* .user-badge::before {
-            content: '';
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: #4caf87;
-            flex-shrink: 0;
-        } */
 
         /* Main content */
         .main {
@@ -164,8 +185,114 @@
             font-weight: 300;
         }
 
-        .question-prompt strong { color: var(--ink); font-weight: 500; }
+        .question-prompt strong { color: var(--ink); font-weight: 300; }
         .question-prompt em { color: var(--ink-light); font-style: italic; }
+
+        .required-star {
+            color: var(--accent);
+            font-weight: 500;
+            margin-left: 3px;
+        }
+
+        .required-badge {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--ink-light);
+            letter-spacing: 0.2px;
+            flex-shrink: 0;
+        }
+
+        .required-badge span {
+            color: var(--accent);
+            margin-right: 2px;
+        }
+
+        .intro-required-note {
+            font-size: 12px;
+            color: var(--ink-light);
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+        .intro-required-note span {
+            color: var(--accent);
+            font-weight: 300;
+        }
+
+        /* Validation */
+        .section.has-error {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(232,93,74,0.18);
+        }
+
+        .section.has-error .section-header {
+            background: var(--accent-soft);
+        }
+
+        .field-error {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12.5px;
+            color: var(--accent);
+            font-weight: 300;
+            margin-top: 10px;
+        }
+
+        .field-error::before {
+            content: '!';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--white);
+            font-size: 10px;
+            font-weight: 300;
+            flex-shrink: 0;
+        }
+
+        .validation-banner {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: var(--accent-soft);
+            border: 1.5px solid var(--accent);
+            border-radius: 10px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .validation-banner.visible {
+            display: flex;
+        }
+
+        .validation-banner-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .validation-banner p {
+            line-height: 1.5;
+        }
+
+        .validation-banner strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .validation-banner span {
+            font-size: 12.5px;
+            font-weight: 400;
+            color: var(--ink-mid);
+        }
 
         /* Image */
         .env-image {
@@ -476,8 +603,11 @@
 
 <header class="page-header">
     <div class="header-left">
-        <h1>Post-Condition Survey</h1>
-        <p>Please answer each question about your experience</p>
+        <a class="back-btn" id="backBtn" title="Back to simulator">&#8592;</a>
+        <div class="header-titles">
+            <h1>Post-Condition Survey</h1>
+            <p>Please answer each question about your experience</p>
+        </div>
     </div>
     <div class="user-badge">
         <span id="userId">—</span> &nbsp;·&nbsp; Condition <span id="condition">—</span>
@@ -486,16 +616,25 @@
 
 <main class="main">
     <p class="intro-text">
-        The questions below assess your understanding of the system at different cognitive levels. Answer as accurately and with as much detail as you can.
+        The questions below assess your understanding of the system at different cognitive levels. Answer as accurately and with as much detail as you can. After each question, indicate your confidence in your answer.
+        <br><br class="intro-required-note"><span class="intro-required-note"><span style="color:var(--accent);font-weight:500;">*</span> All questions are required.</span>
     </p>
 
     <form id="surveyForm">
 
+        <div class="validation-banner" id="validationBanner">
+            <div class="validation-banner-icon">⚠</div>
+            <p>
+                <strong>Please complete all required questions</strong>
+                <span id="validationDetail">Some questions are incomplete. Scroll down to find them.</span>
+            </p>
+        </div>
+
         <!-- REMEMBER -->
         <div class="section">
             <div class="section-header">
-                <!-- <span class="section-tag">Remember</span> -->
                 <span class="section-title">Remember</span>
+                <span class="required-badge"><span>*</span>Required</span>
             </div>
             <div class="section-body">
                 <p class="question-prompt">Given the image below, suppose that you pressed <strong>"up"</strong> on your keyboard. What direction do you expect the spoon to move in?</p>
@@ -506,6 +645,7 @@
                     <label class="choice-label"><input type="radio" name="recall" value="left"> Left</label>
                     <label class="choice-label"><input type="radio" name="recall" value="right"> Right</label>
                 </div>
+                <div class="field-error" id="recall-error" style="display:none;">Please select an answer.</div>
                 <div class="confidence-row">
                     <div class="confidence-label">
                         <span>Confidence</span>
@@ -521,12 +661,13 @@
         <!-- UNDERSTAND -->
         <div class="section">
             <div class="section-header">
-                <!-- <span class="section-tag">Understand</span> -->
                 <span class="section-title">Understand</span>
+                <span class="required-badge"><span>*</span>Required</span>
             </div>
             <div class="section-body">
                 <p class="question-prompt">Why do you think the agent performed that action?</p>
                 <textarea id="understand-system" name="understand-system" placeholder="Describe your reasoning…"></textarea>
+                <div class="field-error" id="understand-error" style="display:none;">Please enter your reasoning.</div>
                 <div class="confidence-row">
                     <div class="confidence-label">
                         <span>Confidence</span>
@@ -542,8 +683,8 @@
         <!-- APPLY -->
         <div class="section">
             <div class="section-header">
-                <!-- <span class="section-tag">Apply</span> -->
                 <span class="section-title">Apply</span>
+                <span class="required-badge"><span>*</span>Required</span>
             </div>
             <div class="section-body">
                 <p class="question-prompt">In the image below, suppose that you pressed <strong>"up"</strong> on your keyboard. What direction do you expect the spoon to move in?</p>
@@ -554,6 +695,7 @@
                     <label class="choice-label"><input type="radio" name="apply" value="left"> Left</label>
                     <label class="choice-label"><input type="radio" name="apply" value="right"> Right</label>
                 </div>
+                <div class="field-error" id="apply-error" style="display:none;">Please select an answer.</div>
                 <div class="confidence-row">
                     <div class="confidence-label">
                         <span>Confidence</span>
@@ -569,8 +711,8 @@
         <!-- ANALYZE -->
         <div class="section">
             <div class="section-header">
-                <!-- <span class="section-tag">Analyze</span> -->
                 <span class="section-title">Analyze</span>
+                <span class="required-badge"><span>*</span>Required</span>
             </div>
             <div class="section-body">
                 <p class="question-prompt">Given the image below, what are the actions the agent is choosing between? <em>Select all that apply.</em></p>
@@ -581,6 +723,7 @@
                     <label class="choice-label"><input type="checkbox" name="analyze-actions" value="left"> Left</label>
                     <label class="choice-label"><input type="checkbox" name="analyze-actions" value="right"> Right</label>
                 </div>
+                <div class="field-error" id="analyze-error" style="display:none;">Please select at least one option.</div>
                 <div class="confidence-row">
                     <div class="confidence-label">
                         <span>Confidence</span>
@@ -596,12 +739,13 @@
         <!-- CREATE -->
         <div class="section">
             <div class="section-header">
-                <!-- <span class="section-tag">Create</span> -->
                 <span class="section-title">Create</span>
+                <span class="required-badge"><span>*</span>Required</span>
             </div>
             <div class="section-body">
                 <p class="question-prompt">Describe what you think the agent's decision-making process looks like.</p>
                 <textarea id="create" name="create" placeholder="Describe the process as you understand it…"></textarea>
+                <div class="field-error" id="create-error" style="display:none;">Please describe the decision-making process.</div>
                 <div class="confidence-row">
                     <div class="confidence-label">
                         <span>Confidence</span>
@@ -619,8 +763,8 @@
 
         <div class="section">
             <div class="section-header">
-                <!-- <span class="section-tag">System Usability</span> -->
                 <span class="section-title">System Usability Scale</span>
+                <span class="required-badge"><span>*</span>Required</span>
             </div>
             <div class="section-body">
                 <p class="question-prompt" style="margin-bottom:20px;">For each statement, select how strongly you agree or disagree.</p>
@@ -630,6 +774,7 @@
                     </div>
                 </div>
                 <div class="sus-grid" id="susGrid"></div>
+                <div class="field-error" id="sus-error" style="display:none;">Please respond to all usability statements.</div>
             </div>
         </div>
 
@@ -702,14 +847,93 @@
         }
         document.getElementById('userId').textContent = userId;
 
-        const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
-        const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+        const hash = window.location.hash;
+        document.getElementById('backBtn').href = 'sim.html' + hash;
+
+        const condition_num = hash.substring(0, hash.indexOf(","));
+        const condition_order = hash.substring(hash.indexOf(',') + 1).trim();
         let cur_condition = condition_order.charAt(parseInt(condition_num.slice(1)) - 1);
         document.getElementById('condition').textContent = cur_condition;
 
         document.getElementById('surveyForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const formData = new FormData(e.target);
+            const form = e.target;
+            const formData = new FormData(form);
+
+            // --- Validate ---
+            const errors = [];
+
+            const clearError = (id, sectionEl) => {
+                document.getElementById(id).style.display = 'none';
+                sectionEl && sectionEl.classList.remove('has-error');
+            };
+
+            const setError = (id, sectionEl) => {
+                document.getElementById(id).style.display = 'flex';
+                sectionEl && sectionEl.classList.add('has-error');
+                errors.push(id);
+            };
+
+            const sections = form.querySelectorAll('.section');
+            // Map section index to section element by order: 0=recall,1=understand,2=apply,3=analyze,4=create,5=sus
+            const sectionEls = Array.from(sections);
+
+            // Recall
+            if (!form.querySelector('input[name="recall"]:checked')) {
+                setError('recall-error', sectionEls[0]);
+            } else { clearError('recall-error', sectionEls[0]); }
+
+            // Understand
+            if (!form.querySelector('#understand-system').value.trim()) {
+                setError('understand-error', sectionEls[1]);
+            } else { clearError('understand-error', sectionEls[1]); }
+
+            // Apply
+            if (!form.querySelector('input[name="apply"]:checked')) {
+                setError('apply-error', sectionEls[2]);
+            } else { clearError('apply-error', sectionEls[2]); }
+
+            // Analyze (at least one checkbox)
+            if (formData.getAll('analyze-actions').length === 0) {
+                setError('analyze-error', sectionEls[3]);
+            } else { clearError('analyze-error', sectionEls[3]); }
+
+            // Create
+            if (!form.querySelector('#create').value.trim()) {
+                setError('create-error', sectionEls[4]);
+            } else { clearError('create-error', sectionEls[4]); }
+
+            // SUS — all 10 answered
+            let susMissing = 0;
+            for (let i = 1; i <= 10; i++) {
+                if (!form.querySelector(`input[name="sus-${i}"]:checked`)) susMissing++;
+            }
+            if (susMissing > 0) {
+                document.getElementById('sus-error').textContent =
+                    susMissing === 1 ? 'Please respond to all usability statements (1 remaining).'
+                                     : `Please respond to all usability statements (${susMissing} remaining).`;
+                setError('sus-error', sectionEls[5]);
+            } else { clearError('sus-error', sectionEls[5]); }
+
+            if (errors.length > 0) {
+                const banner = document.getElementById('validationBanner');
+                const detail = document.getElementById('validationDetail');
+                detail.textContent = errors.length === 1
+                    ? '1 section is incomplete — it\'s highlighted below.'
+                    : `${errors.length} sections are incomplete — they\'re highlighted below.`;
+                banner.classList.add('visible');
+                // Scroll to first error section
+                const firstErrorSection = form.querySelector('.section.has-error');
+                if (firstErrorSection) {
+                    firstErrorSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+
+            // Hide banner if previously shown
+            document.getElementById('validationBanner').classList.remove('visible');
+
+            // --- All valid, save & navigate ---
             const responses = {
                 recall:             formData.get('recall'),
                 recallConfidence:   parseInt(formData.get('recall-confidence')),
@@ -727,11 +951,11 @@
             console.log('Responses:', responses);
             localStorage.setItem('post_responses_' + cur_condition, JSON.stringify(responses));
 
-            const nav_num   = window.location.hash.substring(0, window.location.hash.indexOf(","));
-            const nav_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+            const nav_num   = hash.substring(0, hash.indexOf(","));
+            const nav_order = hash.substring(hash.indexOf(',') + 1).trim();
 
             if (nav_num === "#" + nav_order.length) {
-                window.location.href = 'final_survey.html';
+                window.location.href = 'final_survey.html#' + nav_order;
             } else {
                 window.location.href = 'sim.html#' + (parseInt(nav_num.slice(1)) + 1) + ',' + nav_order;
             }

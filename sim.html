@@ -70,14 +70,6 @@
             gap: 8px;
         }
 
-        /* .user-badge::before {
-            content: '';
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: #4caf87;
-            flex-shrink: 0;
-        } */
-
         /* Main layout */
         .main {
             flex: 1;
@@ -231,7 +223,7 @@
         .continue-btn:active { transform: translateY(0); }
         .continue-btn::after { content: '→'; font-size: 16px; }
 
-        /* Divider note */
+        /* Note card */
         .note-card {
             background: var(--surface-2);
             border: 1px solid var(--border);
@@ -246,6 +238,27 @@
         .note-card strong {
             color: var(--ink-mid);
             font-weight: 500;
+        }
+
+        /* Prompt card — more prominent than note-card */
+        .prompt-card {
+            background: var(--accent-soft);
+            border: 1px solid #f4c4bc;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 13px;
+            color: var(--ink-mid);
+            line-height: 1.55;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .prompt-card strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 4px;
         }
     </style>
 </head>
@@ -289,8 +302,9 @@
             </div>
         </div>
 
-        <div class="note-card">
-            <strong>Tip:</strong> Try moving in different directions and patterns to trigger different agent behaviours. Pay attention to how the spoon responds to your input.
+        <div class="prompt-card">
+            <strong>Interact with the simulator first</strong>
+            Interact with the system and try to identify all 3 policies before continuing to the survey.
         </div>
 
         <button class="continue-btn" id="nextButton">Continue to Survey</button>
