@@ -4,368 +4,561 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post-Study Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            color: #667eea;
-            margin-top: 0;
-        }
-        
-        .user-id-badge {
-            background: #e3f2fd;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-        }
-        
-        .question-group {
-            margin: 30px 0;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 8px;
-        }
-        
-        .question-group h3 {
-            margin-top: 0;
-            color: #333;
+        :root {
+            --ink: #1a1a2e;
+            --ink-mid: #4a4a6a;
+            --ink-light: #8888aa;
+            --accent: #e85d4a;
+            --accent-soft: #fff0ee;
+            --surface: #faf9f7;
+            --surface-2: #f2f0ec;
+            --border: #e0ddd8;
+            --white: #ffffff;
+            --error: #c0392b;
+            --error-soft: #fdf0ee;
         }
 
-        .question-group p.hint {
-            margin: 0 0 15px 0;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 0 0 80px;
+        }
+
+        /* Header */
+        .page-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--ink);
+            letter-spacing: -0.3px;
+        }
+
+        .header-left p {
             font-size: 13px;
-            color: #777;
+            color: var(--ink-light);
+            margin-top: 2px;
+            font-weight: 300;
         }
-        
-        label {
-            display: block;
-            margin: 15px 0 5px 0;
-            font-weight: bold;
-            color: #555;
+
+        .user-badge {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-mid);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
+        .user-badge::before {
+            content: '';
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #4caf87;
+            flex-shrink: 0;
+        }
+
+        /* Main */
+        .main {
+            max-width: 740px;
+            margin: 0 auto;
+            padding: 48px 24px 0;
+        }
+
+        .intro-text {
+            font-size: 15px;
+            color: var(--ink-mid);
+            line-height: 1.7;
+            font-weight: 300;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Section cards */
+        .section {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            transition: box-shadow 0.2s;
+        }
+
+        .section:focus-within {
+            box-shadow: 0 0 0 2px var(--accent);
+            border-color: var(--accent);
+        }
+
+        .section-header {
+            padding: 18px 28px 14px;
+            border-bottom: 1px solid var(--surface-2);
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .section-tag {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 3px 9px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--ink);
+        }
+
+        .section-body {
+            padding: 22px 28px 24px;
+        }
+
+        .question-prompt {
+            font-size: 14px;
+            color: var(--ink-mid);
+            line-height: 1.65;
+            margin-bottom: 16px;
+            font-weight: 300;
+        }
+
+        .question-prompt strong { color: var(--ink); font-weight: 500; }
+
+        /* Textarea */
         textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 13px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
             font-size: 14px;
-            font-family: Arial, sans-serif;
-            box-sizing: border-box;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            color: var(--ink);
+            background: var(--surface);
             resize: vertical;
             min-height: 100px;
+            transition: border-color 0.15s;
+            line-height: 1.6;
+            outline: none;
         }
 
-        /* Drag-and-drop ranking styles */
+        textarea:focus {
+            border-color: var(--accent);
+            background: var(--white);
+        }
+
+        textarea::placeholder { color: var(--ink-light); }
+
+        /* Drag-and-drop ranking */
+        .rank-hint {
+            font-size: 13px;
+            color: var(--ink-light);
+            font-weight: 300;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rank-hint::before {
+            content: '↕';
+            font-size: 14px;
+            color: var(--accent);
+        }
+
         .ranking-list {
             list-style: none;
             padding: 0;
-            margin: 10px 0;
+            margin: 0 0 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .ranking-item {
             display: flex;
             align-items: center;
-            background: white;
-            border: 2px solid #ddd;
+            gap: 12px;
+            background: var(--white);
+            border: 1.5px solid var(--border);
             border-radius: 8px;
             padding: 12px 16px;
-            margin: 8px 0;
             cursor: grab;
             user-select: none;
-            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-            gap: 12px;
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
         }
 
-        .ranking-item:active {
-            cursor: grabbing;
-        }
+        .ranking-item:active { cursor: grabbing; }
 
         .ranking-item.dragging {
-            opacity: 0.5;
-            border-color: #667eea;
+            opacity: 0.45;
+            border-color: var(--accent);
         }
 
         .ranking-item.drag-over {
-            border-color: #667eea;
-            background: #f0f2ff;
-            box-shadow: 0 2px 8px rgba(102,126,234,0.2);
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            box-shadow: 0 2px 8px rgba(232,93,74,0.15);
         }
 
+        .drag-handle {
+            color: var(--border);
+            font-size: 17px;
+            flex-shrink: 0;
+            transition: color 0.15s;
+        }
+
+        .ranking-item:hover .drag-handle { color: var(--ink-light); }
+
         .rank-number {
-            width: 28px;
-            height: 28px;
-            background: #667eea;
-            color: white;
+            width: 26px;
+            height: 26px;
+            background: var(--accent);
+            color: var(--white);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        .drag-handle {
-            color: #bbb;
-            font-size: 18px;
+            font-weight: 500;
+            font-size: 13px;
             flex-shrink: 0;
         }
 
         .condition-label {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ink);
             flex: 1;
         }
 
-        .rank-labels {
+        .rank-endpoints {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            color: #888;
-            margin-top: 4px;
-            padding: 0 4px;
-        }
-        
-        button {
-            padding: 15px 40px;
-            font-size: 18px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 30px;
-        }
-        
-        button:hover {
-            background: #5568d3;
-        }
-        
-        .required {
-            color: #d32f2f;
-        }
-        
-        .success-message {
-            background: #4caf50;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
+            font-size: 11px;
+            color: var(--ink-light);
+            font-weight: 300;
+            padding: 0 2px;
         }
 
+        /* Error banner */
         .error-banner {
-            background: #ffebee;
-            border: 1px solid #ef9a9a;
-            color: #c62828;
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin-top: 16px;
             display: none;
-            font-size: 14px;
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: var(--error-soft);
+            border: 1px solid rgba(192,57,43,0.25);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--error);
+        }
+
+        .error-banner.visible { display: block; }
+
+        /* Submit */
+        .submit-area {
+            margin-top: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 28px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .submit-note {
+            font-size: 13px;
+            color: var(--ink-light);
+            font-weight: 300;
+        }
+
+        button[type="submit"] {
+            padding: 13px 32px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button[type="submit"]::after { content: '→'; font-size: 17px; }
+
+        button[type="submit"]:hover {
+            background: #d44a38;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(232,93,74,0.35);
+        }
+
+        button[type="submit"]:active { transform: translateY(0); }
+
+        /* Success screen */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 60px 24px;
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 24px;
+        }
+
+        .success-screen h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+
+        .success-screen p {
+            font-size: 15px;
+            color: var(--ink-mid);
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 600px) {
+            .page-header { padding: 18px 20px; flex-direction: column; gap: 12px; align-items: flex-start; }
+            .main { padding: 28px 16px 0; }
+            .section-body, .section-header { padding-left: 18px; padding-right: 18px; }
+            .submit-area { flex-direction: column; gap: 16px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="user-id-badge">
-            User ID: <span id="userId"></span>
-        </div>
-        
-        <h1>Post-Study Survey</h1>
-        <p>Thank you for completing the study! Please answer the questions below about your experiences.</p>
-        
-        <form id="surveyForm">
 
-            <!-- Q1: Rank conditions easiest to hardest -->
-            <div class="question-group">
-                <h3>Condition Ranking <span class="required">*</span></h3>
-                <p class="hint">Drag and drop to rank the conditions from <strong>easiest (top)</strong> to <strong>hardest (bottom)</strong>.</p>
-                <ul class="ranking-list" id="rankingList">
-                    <!-- Items injected by JS based on URL -->
-                </ul>
-                <div class="rank-labels">
+<header class="page-header">
+    <div class="header-left">
+        <h1>Post-Study Survey</h1>
+        <p>Final reflections on your experience</p>
+    </div>
+    <div class="user-badge">
+        <span id="userId">—</span>
+    </div>
+</header>
+
+<main class="main">
+    <p class="intro-text">
+        Thank you for completing the study! Please take a moment to answer the questions
+        below about your overall experience across the conditions.
+    </p>
+
+    <form id="surveyForm">
+
+        <!-- Ranking -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag">Ranking</span>
+                <span class="section-title">Condition difficulty</span>
+            </div>
+            <div class="section-body">
+                <p class="question-prompt">Drag and drop to rank the conditions from <strong>easiest (top)</strong> to <strong>hardest (bottom)</strong>.</p>
+                <p class="rank-hint">Drag items to reorder</p>
+                <ul class="ranking-list" id="rankingList"></ul>
+                <div class="rank-endpoints">
                     <span>⬆ Easiest</span>
                     <span>Hardest ⬇</span>
                 </div>
             </div>
-
-            <!-- Q2: Hardest part (free response) -->
-            <div class="question-group">
-                <h3>Challenges</h3>
-                <label for="hardest-part">What was the hardest part of using these systems? <span class="required">*</span></label>
-                <textarea id="hardest-part" name="hardest-part" placeholder="Your answer..."></textarea>
-            </div>
-
-            <!-- Q3: Comments / reflections (free response) -->
-            <div class="question-group">
-                <h3>Comments &amp; Reflections</h3>
-                <label for="comments">Any other comments or reflections?</label>
-                <textarea id="comments" name="comments" placeholder="Your answer..."></textarea>
-            </div>
-
-            <div class="error-banner" id="errorBanner"></div>
-            
-            <button type="submit">Complete Study</button>
-        </form>
-        
-        <div class="success-message" id="successMessage">
-            <h2>Thank you for participating!</h2>
-            <p>Your responses have been recorded.</p>
-            <p>You may now close this window.</p>
         </div>
-    </div>
 
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            // ── User ID ──────────────────────────────────────────────
-            const userId = localStorage.getItem('studyUserId');
-            console.log('User ID from localStorage:', userId);
-            
-            if (!userId) {
-                console.error('No user ID found');
-                alert('No user ID found. Redirecting to start page.');
-                window.location.href = 'index.html';
+        <!-- Challenges -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag">Challenges</span>
+                <span class="section-title">What was the hardest part?</span>
+            </div>
+            <div class="section-body">
+                <p class="question-prompt">Describe the hardest part of using these systems.</p>
+                <textarea id="hardest-part" name="hardest-part" placeholder="Your answer…"></textarea>
+            </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag">Reflections</span>
+                <span class="section-title">Any other comments?</span>
+            </div>
+            <div class="section-body">
+                <p class="question-prompt">Share any other thoughts or reflections on the study. <em style="color:var(--ink-light)">(Optional)</em></p>
+                <textarea id="comments" name="comments" placeholder="Your answer…"></textarea>
+            </div>
+        </div>
+
+        <div class="error-banner" id="errorBanner"></div>
+
+        <div class="submit-area">
+            <p class="submit-note">Your responses will be saved on submission.</p>
+            <button type="submit">Complete Study</button>
+        </div>
+
+    </form>
+
+    <div class="success-screen" id="successScreen">
+        <div class="success-icon">✓</div>
+        <h2>Thank you for participating!</h2>
+        <p>Your responses have been recorded.<br>You may now close this window.</p>
+    </div>
+</main>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const userId = localStorage.getItem('studyUserId');
+        if (!userId) {
+            alert('No user ID found. Redirecting to start page.');
+            window.location.href = 'index.html';
+            return;
+        }
+        document.getElementById('userId').textContent = userId;
+
+        // Parse conditions from URL hash
+        const hash = window.location.hash.replace('#', '').trim();
+        let conditions = hash ? hash.split(',').map(s => s.trim()).filter(Boolean) : [];
+        if (conditions.length === 0) {
+            conditions = ['A', 'B', 'C'];
+            console.warn('No conditions in URL hash; using fallback:', conditions);
+        }
+
+        // Build ranking list
+        const list = document.getElementById('rankingList');
+
+        function buildItems() {
+            list.innerHTML = '';
+            conditions.forEach((cond, idx) => {
+                const li = document.createElement('li');
+                li.className = 'ranking-item';
+                li.draggable = true;
+                li.dataset.condition = cond;
+                li.innerHTML = `
+                    <span class="drag-handle">⠿</span>
+                    <span class="rank-number">${idx + 1}</span>
+                    <span class="condition-label">Condition ${cond}</span>
+                `;
+                list.appendChild(li);
+            });
+            attachDragListeners();
+        }
+
+        function updateRankNumbers() {
+            list.querySelectorAll('.ranking-item').forEach((item, idx) => {
+                item.querySelector('.rank-number').textContent = idx + 1;
+            });
+        }
+
+        let dragSrc = null;
+
+        function attachDragListeners() {
+            list.querySelectorAll('.ranking-item').forEach(item => {
+                item.addEventListener('dragstart', e => {
+                    dragSrc = item;
+                    item.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                item.addEventListener('dragend', () => {
+                    item.classList.remove('dragging');
+                    list.querySelectorAll('.ranking-item').forEach(i => i.classList.remove('drag-over'));
+                    updateRankNumbers();
+                });
+                item.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    if (item !== dragSrc) {
+                        list.querySelectorAll('.ranking-item').forEach(i => i.classList.remove('drag-over'));
+                        item.classList.add('drag-over');
+                    }
+                });
+                item.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (item !== dragSrc) {
+                        const items = [...list.querySelectorAll('.ranking-item')];
+                        const srcIdx = items.indexOf(dragSrc);
+                        const tgtIdx = items.indexOf(item);
+                        if (srcIdx < tgtIdx) {
+                            list.insertBefore(dragSrc, item.nextSibling);
+                        } else {
+                            list.insertBefore(dragSrc, item);
+                        }
+                    }
+                });
+            });
+        }
+
+        buildItems();
+
+        // Form submission
+        const form        = document.getElementById('surveyForm');
+        const errorBanner = document.getElementById('errorBanner');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            errorBanner.classList.remove('visible');
+
+            const hardestPart = document.getElementById('hardest-part').value.trim();
+            if (!hardestPart) {
+                errorBanner.textContent = 'Please describe the hardest part of using the systems before continuing.';
+                errorBanner.classList.add('visible');
+                errorBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
-            document.getElementById('userId').textContent = userId;
 
-            // ── Parse condition letters from URL hash ────────────────
-            // Expected format: e.g.  #A,B,C  or  #A,B  etc.
-            // Falls back gracefully if hash is absent / different format.
-            const hash = window.location.hash.replace('#', '').trim();
-            let conditions = [];
-            if (hash) {
-                conditions = hash.split(',').map(s => s.trim()).filter(Boolean);
-            }
+            const ranking = [...list.querySelectorAll('.ranking-item')].map(i => i.dataset.condition);
+            const responses = {
+                conditionRanking: ranking,
+                hardestPart,
+                comments: document.getElementById('comments').value.trim(),
+            };
 
-            // If no conditions found, show a placeholder so the page isn't broken
-            if (conditions.length === 0) {
-                conditions = ['A', 'B', 'C']; // default fallback
-                console.warn('No conditions found in URL hash; using fallback:', conditions);
-            }
+            console.log('Survey responses:', responses);
+            localStorage.setItem('final_responses', JSON.stringify(responses));
 
-            // ── Build drag-and-drop ranking list ─────────────────────
-            const list = document.getElementById('rankingList');
-
-            function buildItems() {
-                list.innerHTML = '';
-                conditions.forEach((cond, idx) => {
-                    const li = document.createElement('li');
-                    li.className = 'ranking-item';
-                    li.draggable = true;
-                    li.dataset.condition = cond;
-                    li.innerHTML = `
-                        <span class="drag-handle">⠿</span>
-                        <span class="rank-number">${idx + 1}</span>
-                        <span class="condition-label">Condition ${cond}</span>
-                    `;
-                    list.appendChild(li);
-                });
-                attachDragListeners();
-            }
-
-            function updateRankNumbers() {
-                list.querySelectorAll('.ranking-item').forEach((item, idx) => {
-                    item.querySelector('.rank-number').textContent = idx + 1;
-                });
-            }
-
-            let dragSrc = null;
-
-            function attachDragListeners() {
-                list.querySelectorAll('.ranking-item').forEach(item => {
-                    item.addEventListener('dragstart', e => {
-                        dragSrc = item;
-                        item.classList.add('dragging');
-                        e.dataTransfer.effectAllowed = 'move';
-                    });
-                    item.addEventListener('dragend', () => {
-                        item.classList.remove('dragging');
-                        list.querySelectorAll('.ranking-item').forEach(i => i.classList.remove('drag-over'));
-                        updateRankNumbers();
-                    });
-                    item.addEventListener('dragover', e => {
-                        e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
-                        if (item !== dragSrc) {
-                            list.querySelectorAll('.ranking-item').forEach(i => i.classList.remove('drag-over'));
-                            item.classList.add('drag-over');
-                        }
-                    });
-                    item.addEventListener('drop', e => {
-                        e.preventDefault();
-                        if (item !== dragSrc) {
-                            // Determine insertion position
-                            const items = [...list.querySelectorAll('.ranking-item')];
-                            const srcIdx = items.indexOf(dragSrc);
-                            const tgtIdx = items.indexOf(item);
-                            if (srcIdx < tgtIdx) {
-                                list.insertBefore(dragSrc, item.nextSibling);
-                            } else {
-                                list.insertBefore(dragSrc, item);
-                            }
-                        }
-                    });
-                });
-            }
-
-            buildItems();
-
-            // ── Form submission ───────────────────────────────────────
-            const form = document.getElementById('surveyForm');
-            const errorBanner = document.getElementById('errorBanner');
-
-            function showError(msg) {
-                errorBanner.textContent = msg;
-                errorBanner.style.display = 'block';
-                errorBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            form.addEventListener('submit', e => {
-                e.preventDefault();
-                errorBanner.style.display = 'none';
-
-                const hardestPart = document.getElementById('hardest-part').value.trim();
-                if (!hardestPart) {
-                    showError('Please describe the hardest part of using the systems before continuing.');
-                    return;
-                }
-
-                // Collect ranking order
-                const ranking = [...list.querySelectorAll('.ranking-item')].map(i => i.dataset.condition);
-
-                const responses = {
-                    conditionRanking: ranking,          // e.g. ["B","A","C"] easiest→hardest
-                    hardestPart:      hardestPart,
-                    comments:         document.getElementById('comments').value.trim(),
-                };
-
-                console.log('Survey responses:', responses);
-                localStorage.setItem('final_responses', JSON.stringify(responses));
-
-                window.location.href = 'thank_you.html';
-            });
+            window.location.href = 'thank_you.html';
         });
-    </script>
+    });
+</script>
 </body>
 </html>

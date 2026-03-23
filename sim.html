@@ -3,182 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <title>Dot Mover Simulation</title> -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --ink: #1a1a2e;
+            --ink-mid: #4a4a6a;
+            --ink-light: #8888aa;
+            --accent: #e85d4a;
+            --accent-soft: #fff0ee;
+            --surface: #faf9f7;
+            --surface-2: #f2f0ec;
+            --border: #e0ddd8;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            margin: 0;
-            padding: 20px;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            height: 100vh;
+            width: 100%;
+            position: fixed;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
+        }
+
+        /* Header */
+        .page-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 40px;
+            display: flex;
             align-items: center;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            overflow: hidden; /* Prevent scrolling */
-            position: fixed; /* Keep body fixed */
-            width: 100%;
-            height: 100%;
+            justify-content: space-between;
+            flex-shrink: 0;
         }
-        
-        h1 {
-            margin: 10px 0;
+
+        .header-left h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--ink);
+            letter-spacing: -0.3px;
         }
-        
+
+        .header-left p {
+            font-size: 12px;
+            color: var(--ink-light);
+            margin-top: 2px;
+            font-weight: 300;
+        }
+
+        .user-badge {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-mid);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* .user-badge::before {
+            content: '';
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #4caf87;
+            flex-shrink: 0;
+        } */
+
+        /* Main layout */
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 32px;
+            gap: 24px;
+            min-height: 0;
+        }
+
+        /* Canvas card */
+        .canvas-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+
         #gameCanvas {
-            border: 2px solid #333;
-            /* background-color: #000; */
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
             cursor: crosshair;
             display: block;
-            touch-action: none; /* Prevent touch scrolling on mobile */
-            width:48%;
+            touch-action: none;
+            max-height: calc(100vh - 160px);
+            width: auto;
         }
-        
-        .controls {
-            margin-top: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            max-width: 600px;
+
+        /* Side panel */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 320px;
+            flex-shrink: 0;
         }
-        
-        .control-group {
-            margin: 10px 0;
+
+        /* Task card */
+        .task-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
         }
-        
-        label {
-            display: inline-block;
-            width: 150px;
-            font-weight: bold;
+
+        .task-card-header {
+            padding: 14px 20px 12px;
+            border-bottom: 1px solid var(--surface-2);
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
         }
-        
-        select, input[type="range"] {
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
+
+        .task-tag {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 3px 9px;
+            border-radius: 20px;
         }
-        
-        .info {
-            margin-top: 10px;
-            padding: 10px;
-            background: #e3f2fd;
-            border-radius: 4px;
+
+        .task-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--ink);
         }
-        
-        .info p {
-            margin: 5px 0;
-            font-size: 14px;
+
+        .task-body {
+            padding: 16px 20px 18px;
         }
-        
-        button {
-            /* margin-top: 10px; */
-            padding: 10px 20px;
-            background: #2196F3;
-            color: white;
+
+        .task-body p {
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: var(--ink-mid);
+            font-weight: 300;
+        }
+
+        .task-body strong {
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        /* Key hints */
+        .key-hints {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .key-hint {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--ink-mid);
+            font-weight: 400;
+        }
+
+        .key {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-bottom-width: 2px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        /* Continue button */
+        .continue-btn {
+            padding: 13px 24px;
+            background: var(--accent);
+            color: var(--white);
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
             font-size: 14px;
-            width: fit-content;
-        }
-        
-        button:hover {
-            background: #1976D2;
-        }
-
-        .legend {
-            margin-top: 15px;
-            padding: 10px;
-            background: #fff3cd;
-            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
         }
 
-        .legend h4 {
-            margin: 5px 0 10px 0;
+        .continue-btn:hover {
+            background: #d44a38;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(232,93,74,0.35);
         }
 
-        .policy-color {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 1px solid #333;
-            margin-right: 5px;
-            vertical-align: middle;
+        .continue-btn:active { transform: translateY(0); }
+        .continue-btn::after { content: '→'; font-size: 16px; }
+
+        /* Divider note */
+        .note-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: var(--ink-light);
+            line-height: 1.55;
+            font-weight: 300;
         }
-        #canvas-wrapper {
-            display: flex; 
-            flex-direction: row; 
-            align-items: center; 
-            gap: 20px;
+
+        .note-card strong {
+            color: var(--ink-mid);
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
-    <div style="background: #e3f2fd; padding: 10px; border-radius: 6px; margin-bottom: 20px; font-family: 'Courier New', monospace; font-size: 14px; max-width: 600px;">
-        User ID: <span id="userId"></span>, Condition: <span id="condition"></span>
-    </div>
-    
-    <!-- <h1>Dot Mover Simulation</h1> -->
-    <!-- <p><em>Move the dot with arrow keys. The AI infers your goal and provides assistance.</em></p> -->
 
-    <div id="canvas-wrapper">
+<header class="page-header">
+    <div class="header-left">
+        <h1>Simulation</h1>
+        <p>Shared-control cooking environment</p>
+    </div>
+    <div class="user-badge">
+        <span id="userId">—</span>&nbsp;·&nbsp;Condition&nbsp;<span id="condition">—</span>
+    </div>
+</header>
+
+<main class="main">
+
+    <div class="canvas-card">
         <canvas id="gameCanvas" width="600" height="600"></canvas>
-        <div style="display: flex; flex-direction: column; gap: 10px; width:50%;">
-            <!-- <span style="width:80%">Use the arrow keys to move the spoon. You will be sharing control over this spoon with an agent that knows how to complete a specific cooking task. The agent knows how to complete 3 behaviors. Pay attention to the spoon's motion and try to identify those 3 behaviors and their connection to the agent's overall goal.</span> -->
-            <span style="width:80%">Use the arrow keys to move the spoon. You will be sharing control over this spoon with an agent to complete a cooking task. The agent is aware of 3 component policies. Pay attention to how it helps guide the motion of the spoon and try to identify the 3 policies.</span>
-
-            <button id="nextButton">Continue to Survey</button>
-        </div>
     </div>
 
-    <script>
-        
-        window.addEventListener('DOMContentLoaded', () => {
-            let userId = localStorage.getItem('studyUserId');
-            document.getElementById('userId').textContent = userId;
+    <div class="side-panel">
 
-            // Get the current condition # so we know which ordering to use for the conditions
-            const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
-            let number = parseInt(condition_num.slice(1));
-            const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
-            let cur_condition = condition_order.charAt(number-1)
-            document.getElementById('condition').textContent = cur_condition;
-        });
+        <div class="task-card">
+            <div class="task-card-header">
+                <span class="task-tag">Your Task</span>
+                <span class="task-title">Explore the environment</span>
+            </div>
+            <div class="task-body">
+                <p>Use the <strong>arrow keys</strong> to move the spoon. You will be sharing control over this spoon with an agent (represented by the robot gripper) to interact with a cooking environment.</p>
+                <p style="margin-top: 10px;">The agent is aware of <strong>3 component policies</strong> and may guide the motion of the spoon according to one of these policies based on the behaviour it believes you are trying to perform.</p>
+                <p style="margin-top: 10px;">Your goal is to <strong>identify these 3 policies</strong> based on the agent's guidance.</p>
 
-        // Prevent arrow keys from scrolling the page
-        window.addEventListener('keydown', function(e) {
-            // Arrow keys are 37-40
-            if([37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-                e.preventDefault();
-            }
-        }, false);
+                <div class="key-hints">
+                    <div class="key-hint"><span class="key">↑</span></div>
+                    <div class="key-hint"><span class="key">↓</span></div>
+                    <div class="key-hint"><span class="key">←</span></div>
+                    <div class="key-hint"><span class="key">→</span></div>
+                    <span style="font-size:12px;color:var(--ink-light);align-self:center;margin-left:4px;">to move the spoon</span>
+                </div>
+            </div>
+        </div>
 
-        // Prevent spacebar from scrolling
-        window.addEventListener('keydown', function(e) {
-            if(e.keyCode === 32 && e.target === document.body) {
-                e.preventDefault();
-            }
-        });
+        <div class="note-card">
+            <strong>Tip:</strong> Try moving in different directions and patterns to trigger different agent behaviours. Pay attention to how the spoon responds to your input.
+        </div>
 
-        // Prevent touch/pointer scrolling on the canvas
-        const canvas = document.getElementById('gameCanvas');
-        canvas.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-        
-        canvas.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-        }, { passive: false });
+        <button class="continue-btn" id="nextButton">Continue to Survey</button>
 
+    </div>
 
-        // Handle start button
-        nextButton.addEventListener('click', () => {
-            window.location.href = 'post_survey.html' + window.location.hash;//condition_num;
-        });
-    </script>
+</main>
 
-    <!-- <script src="js/data-collector.js"></script> -->
-    <script src="js/sim.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        let userId = localStorage.getItem('studyUserId');
+        document.getElementById('userId').textContent = userId;
 
-    
+        const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
+        let number = parseInt(condition_num.slice(1));
+        const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+        let cur_condition = condition_order.charAt(number - 1);
+        document.getElementById('condition').textContent = cur_condition;
+    });
+
+    // Prevent arrow keys from scrolling the page
+    window.addEventListener('keydown', function(e) {
+        if ([37, 38, 39, 40].indexOf(e.keyCode) > -1) e.preventDefault();
+    }, false);
+
+    window.addEventListener('keydown', function(e) {
+        if (e.keyCode === 32 && e.target === document.body) e.preventDefault();
+    });
+
+    // Prevent touch scrolling on canvas
+    const canvas = document.getElementById('gameCanvas');
+    canvas.addEventListener('touchstart', function(e) { e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove',  function(e) { e.preventDefault(); }, { passive: false });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        window.location.href = 'post_survey.html' + window.location.hash;
+    });
+</script>
+
+<script src="js/sim.js"></script>
+
 </body>
 </html>

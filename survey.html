@@ -4,285 +4,443 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pre-Study Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --ink: #1a1a2e;
+            --ink-mid: #4a4a6a;
+            --ink-light: #8888aa;
+            --accent: #e85d4a;
+            --accent-soft: #fff0ee;
+            --surface: #faf9f7;
+            --surface-2: #f2f0ec;
+            --border: #e0ddd8;
+            --white: #ffffff;
+            --error: #c0392b;
+            --error-soft: #fdf0ee;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 0 0 80px;
         }
-        
-        .container {
-            max-width: 800px;
+
+        /* Header */
+        .page-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--ink);
+            letter-spacing: -0.3px;
+        }
+
+        .header-left p {
+            font-size: 13px;
+            color: var(--ink-light);
+            margin-top: 2px;
+            font-weight: 300;
+        }
+
+        .user-badge {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-mid);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* .user-badge::before {
+            content: '';
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #4caf87;
+            flex-shrink: 0;
+        } */
+
+        /* Main */
+        .main {
+            max-width: 740px;
             margin: 0 auto;
-            background: white;
-            padding: 40px;
+            padding: 48px 24px 0;
+        }
+
+        .intro-text {
+            font-size: 15px;
+            color: var(--ink-mid);
+            line-height: 1.7;
+            font-weight: 300;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Section cards */
+        .section {
+            background: var(--white);
+            border: 1px solid var(--border);
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 12px;
+            transition: box-shadow 0.2s;
         }
-        
-        h1 {
-            color: #667eea;
-            margin-top: 0;
+
+        .section:focus-within {
+            box-shadow: 0 0 0 2px var(--accent);
+            border-color: var(--accent);
         }
-        
-        .user-id-badge {
-            background: #e3f2fd;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
+
+        .section.has-error {
+            border-color: var(--error);
+            box-shadow: 0 0 0 2px rgba(192,57,43,0.15);
         }
-        
-        .question-group {
-            margin: 30px 0;
-            padding: 20px;
-            background: #f9f9f9;
+
+        .section-header {
+            padding: 18px 28px 14px;
+            border-bottom: 1px solid var(--surface-2);
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 17px;
+            font-weight: 400;
+            color: var(--ink);
+            line-height: 1.4;
+        }
+
+        .required-badge {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 3px 8px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+        .section-body {
+            padding: 18px 28px 22px;
+        }
+
+        /* Choice pills */
+        .choice-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .choice-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
             border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--ink-mid);
+            transition: all 0.15s;
+            background: var(--white);
+            user-select: none;
         }
-        
-        .question-group h3 {
-            margin-top: 0;
-            color: #333;
+
+        .choice-label:hover {
+            border-color: var(--accent);
+            color: var(--ink);
+            background: var(--accent-soft);
         }
-        
-        label {
-            display: block;
-            margin: 15px 0 5px 0;
-            font-weight: bold;
-            color: #555;
+
+        .choice-label input {
+            accent-color: var(--accent);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            flex-shrink: 0;
         }
-        
-        .radio-group {
-            margin: 10px 0;
+
+        .choice-label:has(input:checked) {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--ink);
+            font-weight: 500;
         }
-        
-        .radio-group label {
+
+        /* Error message */
+        .error-message {
+            display: none;
+            margin-top: 10px;
+            padding: 9px 13px;
+            background: var(--error-soft);
+            border: 1px solid rgba(192,57,43,0.25);
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--error);
+            font-weight: 400;
+        }
+
+        .error-message.visible { display: block; }
+
+        /* Submit */
+        .submit-area {
+            margin-top: 32px;
             display: flex;
             align-items: center;
-            font-weight: normal;
-            margin: 8px 0;
-            cursor: pointer;
-        }
-        
-        .radio-group input[type="radio"] {
-            margin-right: 10px;
-            width: auto;
+            justify-content: space-between;
+            padding: 24px 28px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
         }
 
-        .checkbox-group {
-            margin: 10px 0;
+        .submit-note {
+            font-size: 13px;
+            color: var(--ink-light);
+            font-weight: 300;
         }
 
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            font-weight: normal;
-            margin: 8px 0;
-            cursor: pointer;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            margin-right: 10px;
-            width: auto;
-        }
-        
-        button {
-            padding: 15px 40px;
-            font-size: 18px;
-            background: #667eea;
-            color: white;
+        button[type="submit"] {
+            padding: 13px 32px;
+            background: var(--accent);
+            color: var(--white);
             border: none;
             border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 30px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        button:hover {
-            background: #5568d3;
+
+        button[type="submit"]::after { content: '→'; font-size: 17px; }
+
+        button[type="submit"]:hover {
+            background: #d44a38;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(232,93,74,0.35);
         }
-        
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .error-message {
-            color: #d32f2f;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        .required {
-            color: #d32f2f;
+
+        button[type="submit"]:active { transform: translateY(0); }
+
+        @media (max-width: 600px) {
+            .page-header { padding: 18px 20px; flex-direction: column; gap: 12px; align-items: flex-start; }
+            .main { padding: 28px 16px 0; }
+            .section-body, .section-header { padding-left: 18px; padding-right: 18px; }
+            .submit-area { flex-direction: column; gap: 16px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="user-id-badge">
-            User ID: <span id="userId"></span>
-        </div>
-        
-        <h1>Pre-Study Survey</h1>
-        <p>Please answer the following questions before beginning the simulation task.</p>
-        
-        <form id="surveyForm">
 
-            <!-- Age Range -->
-            <div class="question-group">
-                <h3>What is your age range? <span class="required">*</span></h3>
-                <div class="radio-group">
-                    <label><input type="radio" name="age-range" value="18-24" required> 18–24</label>
-                    <label><input type="radio" name="age-range" value="25-34"> 25–34</label>
-                    <label><input type="radio" name="age-range" value="35-44"> 35–44</label>
-                    <label><input type="radio" name="age-range" value="45-54"> 45–54</label>
-                    <label><input type="radio" name="age-range" value="55-64"> 55–64</label>
-                    <label><input type="radio" name="age-range" value="65+"> 65 and over</label>
+<header class="page-header">
+    <div class="header-left">
+        <h1>Pre-Study Survey</h1>
+        <p>Please answer before beginning the simulation</p>
+    </div>
+    <div class="user-badge">
+        <span id="userId">—</span>
+    </div>
+</header>
+
+<main class="main">
+    <p class="intro-text">
+        Demographic Questionnaire
+    </p>
+
+    <form id="surveyForm">
+
+        <!-- Age Range -->
+        <div class="section" id="section-age-range">
+            <div class="section-header">
+                <span class="section-title">What is your age range?</span>
+                <span class="required-badge">Required</span>
+            </div>
+            <div class="section-body">
+                <div class="choice-group">
+                    <label class="choice-label"><input type="radio" name="age-range" value="18-24" required> 18–24</label>
+                    <label class="choice-label"><input type="radio" name="age-range" value="25-34"> 25–34</label>
+                    <label class="choice-label"><input type="radio" name="age-range" value="35-44"> 35–44</label>
+                    <label class="choice-label"><input type="radio" name="age-range" value="45-54"> 45–54</label>
+                    <label class="choice-label"><input type="radio" name="age-range" value="55-64"> 55–64</label>
+                    <label class="choice-label"><input type="radio" name="age-range" value="65+"> 65 and over</label>
                 </div>
                 <div class="error-message" id="age-range-error">Please select your age range.</div>
             </div>
+        </div>
 
-            <!-- Education -->
-            <div class="question-group">
-                <h3>What is the highest degree or level of education that you have completed? <span class="required">*</span></h3>
-                <div class="radio-group">
-                    <label><input type="radio" name="education" value="high-school" required> High school or equivalent</label>
-                    <label><input type="radio" name="education" value="associate"> Associate degree</label>
-                    <label><input type="radio" name="education" value="bachelors"> Bachelor's degree</label>
-                    <label><input type="radio" name="education" value="masters"> Master's degree</label>
-                    <label><input type="radio" name="education" value="doctorate"> Doctorate degree or higher</label>
+        <!-- Education -->
+        <div class="section" id="section-education">
+            <div class="section-header">
+                <span class="section-title">What is the highest degree or level of education you have completed?</span>
+                <span class="required-badge">Required</span>
+            </div>
+            <div class="section-body">
+                <div class="choice-group">
+                    <label class="choice-label"><input type="radio" name="education" value="high-school" required> High school or equivalent</label>
+                    <label class="choice-label"><input type="radio" name="education" value="associate"> Associate degree</label>
+                    <label class="choice-label"><input type="radio" name="education" value="bachelors"> Bachelor's degree</label>
+                    <label class="choice-label"><input type="radio" name="education" value="masters"> Master's degree</label>
+                    <label class="choice-label"><input type="radio" name="education" value="doctorate"> Doctorate degree or higher</label>
                 </div>
                 <div class="error-message" id="education-error">Please select your education level.</div>
             </div>
+        </div>
 
-            <!-- Gaming Frequency -->
-            <div class="question-group">
-                <h3>How often do you play video games? <span class="required">*</span></h3>
-                <div class="radio-group">
-                    <label><input type="radio" name="gaming-frequency" value="never" required> Never</label>
-                    <label><input type="radio" name="gaming-frequency" value="rarely"> Rarely</label>
-                    <label><input type="radio" name="gaming-frequency" value="once-a-month"> Once a month</label>
-                    <label><input type="radio" name="gaming-frequency" value="once-a-week"> Once a week</label>
-                    <label><input type="radio" name="gaming-frequency" value="every-day"> Every day</label>
+        <!-- Gaming Frequency -->
+        <div class="section" id="section-gaming-frequency">
+            <div class="section-header">
+                <span class="section-title">How often do you play video games?</span>
+                <span class="required-badge">Required</span>
+            </div>
+            <div class="section-body">
+                <div class="choice-group">
+                    <label class="choice-label"><input type="radio" name="gaming-frequency" value="never" required> Never</label>
+                    <label class="choice-label"><input type="radio" name="gaming-frequency" value="rarely"> Rarely</label>
+                    <label class="choice-label"><input type="radio" name="gaming-frequency" value="once-a-month"> Once a month</label>
+                    <label class="choice-label"><input type="radio" name="gaming-frequency" value="once-a-week"> Once a week</label>
+                    <label class="choice-label"><input type="radio" name="gaming-frequency" value="every-day"> Every day</label>
                 </div>
                 <div class="error-message" id="gaming-frequency-error">Please select an option.</div>
             </div>
+        </div>
 
-            <!-- Robot Experience -->
-            <div class="question-group">
-                <h3>Have you had previous interactions with robots? <span class="required">*</span></h3>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" name="robot-experience" value="none"> None</label>
-                    <label><input type="checkbox" name="robot-experience" value="household"> Household robots</label>
-                    <label><input type="checkbox" name="robot-experience" value="industrial"> Industrial robots</label>
-                    <label><input type="checkbox" name="robot-experience" value="social"> Social robots</label>
+        <!-- Robot Experience -->
+        <div class="section" id="section-robot-experience">
+            <div class="section-header">
+                <span class="section-title">Have you had previous interactions with robots?</span>
+                <span class="required-badge">Required · Select all that apply</span>
+            </div>
+            <div class="section-body">
+                <div class="choice-group">
+                    <label class="choice-label"><input type="checkbox" name="robot-experience" value="none"> None</label>
+                    <label class="choice-label"><input type="checkbox" name="robot-experience" value="household"> Household robots</label>
+                    <label class="choice-label"><input type="checkbox" name="robot-experience" value="industrial"> Industrial robots</label>
+                    <label class="choice-label"><input type="checkbox" name="robot-experience" value="social"> Social robots</label>
                 </div>
                 <div class="error-message" id="robot-experience-error">Please select at least one option.</div>
             </div>
-            
+        </div>
+
+        <div class="submit-area">
+            <p class="submit-note">All fields are required to continue.</p>
             <button type="submit">Continue to Simulation</button>
-        </form>
-    </div>
+        </div>
 
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            // Get and display user ID
-            const userId = localStorage.getItem('studyUserId');
-            console.log('User ID from localStorage:', userId);
-            
-            if (!userId) {
-                console.error('No user ID found');
-                alert('No user ID found. Redirecting to start page.');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            document.getElementById('userId').textContent = userId;
-            
-            // Form submission
-            const form = document.getElementById('surveyForm');
-        
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                console.log('Form submitted');
-                
-                const isValid = validateForm();
-                console.log('Form validation result:', isValid);
-                
-                if (!isValid) {
-                    console.log('Form validation failed - check required fields');
-                    alert('Please fill in all required fields before continuing.');
-                    return;
-                }
-                
-                console.log('Form is valid, collecting responses...');
-                
-                // Collect all responses
-                const formData = new FormData(form);
-                const responses = {};
-                
-                responses.ageRange = formData.get('age-range');
-                responses.education = formData.get('education');
-                responses.gamingFrequency = formData.get('gaming-frequency');
-                responses.robotExperience = formData.getAll('robot-experience');
-                
-                console.log('Survey responses:', responses);
+    </form>
+</main>
 
-                localStorage.setItem('pre_responses', JSON.stringify(responses));
-                
-                console.log('Navigating to sim.html...');
-                window.location.href = 'sim.html' + window.location.hash;
-            });
-        
-            function validateForm() {
-                let isValid = true;
-                const errors = [];
-                
-                // Clear previous errors
-                document.querySelectorAll('.error-message').forEach(el => {
-                    el.style.display = 'none';
-                });
-                
-                // Validate age range
-                if (!document.querySelector('input[name="age-range"]:checked')) {
-                    document.getElementById('age-range-error').style.display = 'block';
-                    errors.push('age-range');
-                    isValid = false;
-                }
-                
-                // Validate education
-                if (!document.querySelector('input[name="education"]:checked')) {
-                    document.getElementById('education-error').style.display = 'block';
-                    errors.push('education');
-                    isValid = false;
-                }
-                
-                // Validate gaming frequency
-                if (!document.querySelector('input[name="gaming-frequency"]:checked')) {
-                    document.getElementById('gaming-frequency-error').style.display = 'block';
-                    errors.push('gaming-frequency');
-                    isValid = false;
-                }
-                
-                // Validate robot experience (at least one)
-                const robotExp = document.querySelectorAll('input[name="robot-experience"]:checked');
-                if (robotExp.length === 0) {
-                    document.getElementById('robot-experience-error').style.display = 'block';
-                    errors.push('robot-experience');
-                    isValid = false;
-                }
-                
-                if (!isValid) {
-                    console.log('Validation errors in fields:', errors);
-                }
-                
-                return isValid;
-            }
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const userId = localStorage.getItem('studyUserId');
+        if (!userId) {
+            alert('No user ID found. Redirecting to start page.');
+            window.location.href = 'index.html';
+            return;
+        }
+        document.getElementById('userId').textContent = userId;
+
+        const form = document.getElementById('surveyForm');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const isValid = validateForm();
+            if (!isValid) return;
+
+            const formData = new FormData(form);
+            const responses = {
+                ageRange:         formData.get('age-range'),
+                education:        formData.get('education'),
+                gamingFrequency:  formData.get('gaming-frequency'),
+                robotExperience:  formData.getAll('robot-experience'),
+            };
+
+            console.log('Survey responses:', responses);
+            localStorage.setItem('pre_responses', JSON.stringify(responses));
+            window.location.href = 'sim.html' + window.location.hash;
         });
-    </script>
+
+        function validateForm() {
+            let isValid = true;
+
+            // Clear all errors
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('visible'));
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('has-error'));
+
+            const checks = [
+                {
+                    selector: 'input[name="age-range"]:checked',
+                    errorId: 'age-range-error',
+                    sectionId: 'section-age-range',
+                    type: 'radio'
+                },
+                {
+                    selector: 'input[name="education"]:checked',
+                    errorId: 'education-error',
+                    sectionId: 'section-education',
+                    type: 'radio'
+                },
+                {
+                    selector: 'input[name="gaming-frequency"]:checked',
+                    errorId: 'gaming-frequency-error',
+                    sectionId: 'section-gaming-frequency',
+                    type: 'radio'
+                },
+                {
+                    selector: 'input[name="robot-experience"]:checked',
+                    errorId: 'robot-experience-error',
+                    sectionId: 'section-robot-experience',
+                    type: 'checkbox'
+                },
+            ];
+
+            checks.forEach(({ selector, errorId, sectionId }) => {
+                if (!document.querySelector(selector)) {
+                    document.getElementById(errorId).classList.add('visible');
+                    document.getElementById(sectionId).classList.add('has-error');
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                // Scroll to first error
+                const firstError = document.querySelector('.section.has-error');
+                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            return isValid;
+        }
+    });
+</script>
 </body>
 </html>

@@ -4,381 +4,739 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post-Condition Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --ink: #1a1a2e;
+            --ink-mid: #4a4a6a;
+            --ink-light: #8888aa;
+            --accent: #e85d4a;
+            --accent-soft: #fff0ee;
+            --surface: #faf9f7;
+            --surface-2: #f2f0ec;
+            --border: #e0ddd8;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 0 0 80px;
         }
-        
-        .container {
-            max-width: 800px;
+
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            width: 100%;
+            background: var(--border);
+            z-index: 100;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Header */
+        .page-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--ink);
+            letter-spacing: -0.3px;
+        }
+
+        .header-left p {
+            font-size: 13px;
+            color: var(--ink-light);
+            margin-top: 2px;
+            font-weight: 300;
+        }
+
+        .user-badge {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-mid);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* .user-badge::before {
+            content: '';
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #4caf87;
+            flex-shrink: 0;
+        } */
+
+        /* Main content */
+        .main {
+            max-width: 740px;
             margin: 0 auto;
-            background: white;
-            padding: 40px;
+            padding: 48px 24px 0;
+        }
+
+        .intro-text {
+            font-size: 15px;
+            color: var(--ink-mid);
+            line-height: 1.7;
+            margin-bottom: 40px;
+            font-weight: 300;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Section card */
+        .section {
+            margin-bottom: 12px;
+            background: var(--white);
+            border: 1px solid var(--border);
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
         }
-        
-        h1 {
-            color: #667eea;
-            margin-top: 0;
+
+        .section:focus-within {
+            box-shadow: 0 0 0 2px var(--accent);
+            border-color: var(--accent);
         }
-        
-        .user-id-badge {
-            background: #e3f2fd;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-family: 'Courier New', monospace;
+
+        .section-header {
+            padding: 20px 28px 16px;
+            border-bottom: 1px solid var(--surface-2);
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .section-tag {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 3px 9px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--ink);
+        }
+
+        .section-body {
+            padding: 22px 28px 24px;
+        }
+
+        .question-prompt {
             font-size: 14px;
+            color: var(--ink-mid);
+            line-height: 1.65;
+            margin-bottom: 16px;
+            font-weight: 300;
         }
-        
-        .question-group {
-            margin: 30px 0;
-            padding: 20px;
-            background: #f9f9f9;
+
+        .question-prompt strong { color: var(--ink); font-weight: 500; }
+        .question-prompt em { color: var(--ink-light); font-style: italic; }
+
+        /* Image */
+        .env-image {
+            width: 200px;
+            height: auto;
             border-radius: 8px;
-        }
-        
-        .question-group h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        
-        label {
+            border: 1px solid var(--border);
+            margin: 12px 0 18px;
             display: block;
-            margin: 15px 0 5px 0;
-            font-weight: bold;
-            color: #555;
         }
-        
+
+        /* Choice pills */
+        .choice-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0 20px;
+        }
+
+        .choice-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--ink-mid);
+            transition: all 0.15s;
+            background: var(--white);
+            user-select: none;
+        }
+
+        .choice-label:hover {
+            border-color: var(--accent);
+            color: var(--ink);
+            background: var(--accent-soft);
+        }
+
+        .choice-label input {
+            accent-color: var(--accent);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        .choice-label:has(input:checked) {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        /* Textarea */
         textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 13px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
             font-size: 14px;
-            font-family: Arial, sans-serif;
-            box-sizing: border-box;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            color: var(--ink);
+            background: var(--surface);
             resize: vertical;
-            min-height: 80px;
+            min-height: 90px;
+            transition: border-color 0.15s;
+            line-height: 1.6;
+            outline: none;
         }
-        
-        .likert-scale {
+
+        textarea:focus {
+            border-color: var(--accent);
+            background: var(--white);
+        }
+
+        textarea::placeholder { color: var(--ink-light); }
+
+        /* Confidence slider */
+        .confidence-row {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .confidence-label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            color: var(--ink-light);
+            text-transform: uppercase;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
-            margin: 15px 0;
+            align-items: center;
         }
-        
-        .likert-option {
+
+        .confidence-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            color: var(--accent);
+            font-weight: 400;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 3px solid var(--white);
+            box-shadow: 0 1px 4px rgba(232,93,74,0.4);
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        .slider-endpoints {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 11px;
+            color: var(--ink-light);
+            font-weight: 300;
+        }
+
+        /* SUS */
+        .sus-header-row {
+            display: flex;
+            justify-content: flex-end;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 4px;
+        }
+
+        .sus-scale-header {
+            display: flex;
+            gap: 4px;
+        }
+
+        .sus-scale-header span {
+            width: 32px;
+            text-align: center;
+            font-size: 10px;
+            color: var(--ink-light);
+            font-weight: 500;
+        }
+
+        .sus-grid { display: flex; flex-direction: column; }
+
+        .sus-item {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--surface-2);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .sus-item:last-child { border-bottom: none; }
+
+        .sus-question {
+            font-size: 14px;
+            color: var(--ink);
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        .sus-num {
+            color: var(--accent);
+            font-weight: 500;
+            margin-right: 6px;
+        }
+
+        .sus-scale { display: flex; gap: 4px; }
+
+        .sus-scale label {
             display: flex;
             flex-direction: column;
             align-items: center;
-            flex: 1;
-        }
-        
-        .likert-option input[type="radio"] {
-            margin-bottom: 5px;
-        }
-        
-        .likert-option span {
-            font-size: 12px;
-            text-align: center;
-        }
-        
-        .radio-group {
-            margin: 10px 0;
-        }
-        
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            font-weight: normal;
-            margin: 8px 0;
             cursor: pointer;
-        }
-        
-        .radio-group input[type="radio"],
-        .radio-group input[type="checkbox"] {
-            margin-right: 10px;
-            width: auto;
-        }
-        
-        button {
-            padding: 15px 40px;
-            font-size: 18px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 30px;
-        }
-        
-        button:hover {
-            background: #5568d3;
-        }
-        
-        .required {
-            color: #d32f2f;
-        }
-        
-        .success-message {
-            background: #4caf50;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
+            font-weight: 400;
+            margin: 0;
         }
 
-        .img-env {
-            width:30%;
-            height:30%;
-            padding-left: 20px;
-            margin-top: 20px;
+        .sus-radio {
+            width: 32px;
+            height: 32px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            display: flex;
             align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: var(--white);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-mid);
+        }
+
+        .sus-scale label:hover .sus-radio {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .sus-scale input[type="radio"] { display: none; }
+
+        .sus-scale input[type="radio"]:checked + .sus-radio {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--white);
+        }
+
+        /* Divider */
+        .divider-label {
+            text-align: center;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--ink-light);
+            margin: 32px 0 16px;
+            position: relative;
+        }
+
+        .divider-label::before, .divider-label::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 38%;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider-label::before { left: 0; }
+        .divider-label::after { right: 0; }
+
+        /* Submit */
+        .submit-area {
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 28px 32px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .submit-note {
+            font-size: 13px;
+            color: var(--ink-light);
+            font-weight: 300;
+        }
+
+        button[type="submit"] {
+            padding: 14px 32px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button[type="submit"]:hover {
+            background: #d44a38;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(232,93,74,0.35);
+        }
+
+        button[type="submit"]::after { content: '→'; font-size: 17px; }
+
+        @media (max-width: 600px) {
+            .page-header { padding: 18px 20px; flex-direction: column; gap: 12px; align-items: flex-start; }
+            .main { padding: 28px 16px 0; }
+            .section-body, .section-header { padding-left: 18px; padding-right: 18px; }
+            .sus-item { grid-template-columns: 1fr; }
+            .submit-area { flex-direction: column; gap: 16px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="user-id-badge">
-            User ID: <span id="userId"></span>, Condition: <span id="condition"></span>
-        </div>
-        
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<header class="page-header">
+    <div class="header-left">
         <h1>Post-Condition Survey</h1>
-        <p>Thank you for completing the simulation! Please answer the following questions about your experience.</p>
-        
-        <form id="surveyForm">
-            <!-------------->
-            <!-- Recall -->
-            <div class="question-group">
-                <h3>Recall</h3>
-                <span>Given the image below, suppose that you pressed "up" on your keyboard. What direction do you expect the spoon to move in?</span>
-                <br>
-                <img class="img-env", src="alternate_envs/sim_screenshot.png"/>
-                <div class="radio-group">
-                    <label><input type="radio" name="recall" value="up"> up </label>
-                    <label><input type="radio" name="recall" value="down"> down </label>
-                    <label><input type="radio" name="recall" value="left"> left </label>
-                    <label><input type="radio" name="recall" value="right"> right </label>
-                </div>
-                <!-- confidence -->
-                <label for="recall-confidence">Confidence in your answer (0 to 10):</label>
-                <input type="range" id="recall-confidence" name="recall-confidence" min="0" max="10" value="5">
-            </div>
-            <!-------------->
-
-            <!-------------->
-            <!-- Understand -->
-            <div class="question-group">
-                <label>Why do you think the agent performed that action?</label>
-                <textarea id="overall-goal" name="overall-goal" placeholder="Your answer..."></textarea>
-
-                <!-- confidence -->
-                <label for="understand-confidence">Confidence in your answer (0 to 10):</label>
-                <input type="range" id="understand-confidence" name="understand-confidence" min="0" max="10" value="5">
-            </div>
-            <!-------------->
-
-            <!-------------->
-            <!-- Analyze -->
-            <div class="question-group">
-                <h3>Predict</h3>
-                <span>Given the image below, what are the actions that the agent is choosing between (select all that apply)?</span>
-                <img class="img-env", src="alternate_envs/alternate_env1.png"/>
-                <div class="radio-group">
-                    <label><input type="checkbox" name="predict-actions" value="up"> up </label>
-                    <label><input type="checkbox" name="predict-actions" value="down"> down </label>
-                    <label><input type="checkbox" name="predict-actions" value="left"> left </label>
-                    <label><input type="checkbox" name="predict-actions" value="right"> right </label>
-                </div>
-
-                <!-- confidence -->
-                <label for="analyze-confidence">Confidence in your answer (0 to 10):</label>
-                <input type="range" id="analyze-confidence" name="analyze-confidence" min="0" max="10" value="5">
-            </div>
-            <!-------------->
-
-            <!-------------->
-            <!-- Create -->
-            <div class="question-group">
-                <label>Describe what you think the agent's decision-making process looks like</label>
-                <textarea id="create" name="create" placeholder="Your answer..."></textarea>
-
-                <!-- confidence -->
-                <label for="create-confidence">Confidence in your answer (0 to 10):</label>
-                <input type="range" id="create-confidence" name="create-confidence" min="0" max="10" value="5">
-            </div>
-            <!-------------->
-
-            <!-- SUS -->
-            <div class="question-group">
-                <h3>System Usability Scale (SUS)</h3>
-
-                <fieldset class="likert-field">
-                    <legend>I think that I would like to use this system frequently. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-1"></div>
-                </fieldset>
-
-                <fieldset class="likert-field">
-                    <legend>I found the system unnecessarily complex. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-2"></div>
-                </fieldset>
-
-                <fieldset class="likert-field">
-                    <legend>I thought the system was easy to use. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-3"></div>
-                </fieldset>
-
-                <fieldset class="likert-field">
-                    <legend>I think that I would need the support of a technical person to be able to use this system. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-4"></div>
-                </fieldset>
-
-                <fieldset class="likert-field">
-                    <legend>I found the various functions in this system were well integrated. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-5"></div>
-                </fieldset>
-
-                <fieldset class="likert-field">
-                    <legend>I thought there was too much inconsistency in this system. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-6"></div>
-                </fieldset>
-
-                <fieldset class="likert-field">
-                    <legend>I would imagine that most people would learn to use this system very quickly. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-7"></div>
-                </fieldset>
-
-                <fieldset class="likert-field">
-                    <legend>I found the system very cumbersome to use. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-8"></div>
-                </fieldset>
-
-                <fieldset class="likert-field">
-                    <legend>I felt very confident using the system. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-9"></div>
-                </fieldset>
-
-                <fieldset class="likert-field">
-                    <legend>I needed to learn a lot of things before I could get going with this system. <span class="required">*</span></legend>
-                    <div class="likert-scale" data-name="sus-10"></div>
-                </fieldset>
-            </div>
-            
-            <button type="submit">Continue</button>
-        </form> 
+        <p>Please answer each question about your experience</p>
     </div>
+    <div class="user-badge">
+        <span id="userId">—</span> &nbsp;·&nbsp; Condition <span id="condition">—</span>
+    </div>
+</header>
 
+<main class="main">
+    <p class="intro-text">
+        The questions below assess your understanding of the system at different cognitive levels. Answer as accurately and with as much detail as you can.
+    </p>
 
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            // Get and display user ID
-            const userId = localStorage.getItem('studyUserId');
-            console.log('User ID from localStorage:', userId);
-            
-            if (!userId) {
-                console.error('No user ID found');
-                alert('No user ID found. Redirecting to start page.');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            document.getElementById('userId').textContent = userId;
-            
-            // Get the current condition # so we know which ordering to use for the conditions
-            const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
-            let number = parseInt(condition_num.slice(1));
-            const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
-            let cur_condition = condition_order.charAt(number - 1);
-            document.getElementById('condition').textContent = cur_condition;
+    <form id="surveyForm">
 
-            // Form submission
-            const form = document.getElementById('surveyForm');
-        
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const isValid = true;
-                console.log('Form validation result:', isValid);
-                
-                if (!isValid) {
-                    alert('Please fill in all required fields before continuing.');
-                    return;
-                }
-                
-                console.log('Form is valid, collecting responses...');
-                
-                // Collect all responses
-                const formData = new FormData(form);
-                const responses = {};
+        <!-- REMEMBER -->
+        <div class="section">
+            <div class="section-header">
+                <!-- <span class="section-tag">Remember</span> -->
+                <span class="section-title">Remember</span>
+            </div>
+            <div class="section-body">
+                <p class="question-prompt">Given the image below, suppose that you pressed <strong>"up"</strong> on your keyboard. What direction do you expect the spoon to move in?</p>
+                <img class="env-image" src="alternate_envs/sim_screenshot.png" alt="Simulation screenshot"/>
+                <div class="choice-group">
+                    <label class="choice-label"><input type="radio" name="recall" value="up"> Up</label>
+                    <label class="choice-label"><input type="radio" name="recall" value="down"> Down</label>
+                    <label class="choice-label"><input type="radio" name="recall" value="left"> Left</label>
+                    <label class="choice-label"><input type="radio" name="recall" value="right"> Right</label>
+                </div>
+                <div class="confidence-row">
+                    <div class="confidence-label">
+                        <span>Confidence</span>
+                        <span class="confidence-value" id="recall-conf-val">5</span>
+                    </div>
+                    <input type="range" id="recall-confidence" name="recall-confidence" min="0" max="10" value="5"
+                        oninput="document.getElementById('recall-conf-val').textContent=this.value;updateProgress()">
+                    <div class="slider-endpoints"><span>Not at all confident</span><span>Extremely confident</span></div>
+                </div>
+            </div>
+        </div>
 
-                // Recall
-                responses.recall = formData.get('recall');
-                responses.recallConfidence = parseInt(formData.get('recall-confidence'));
+        <!-- UNDERSTAND -->
+        <div class="section">
+            <div class="section-header">
+                <!-- <span class="section-tag">Understand</span> -->
+                <span class="section-title">Understand</span>
+            </div>
+            <div class="section-body">
+                <p class="question-prompt">Why do you think the agent performed that action?</p>
+                <textarea id="understand-system" name="understand-system" placeholder="Describe your reasoning…"></textarea>
+                <div class="confidence-row">
+                    <div class="confidence-label">
+                        <span>Confidence</span>
+                        <span class="confidence-value" id="understand-conf-val">5</span>
+                    </div>
+                    <input type="range" id="understand-confidence" name="understand-confidence" min="0" max="10" value="5"
+                        oninput="document.getElementById('understand-conf-val').textContent=this.value;updateProgress()">
+                    <div class="slider-endpoints"><span>Not at all confident</span><span>Extremely confident</span></div>
+                </div>
+            </div>
+        </div>
 
-                // Understand
-                responses.overallGoal = formData.get('overall-goal');
-                responses.understandConfidence = parseInt(formData.get('understand-confidence'));
+        <!-- APPLY -->
+        <div class="section">
+            <div class="section-header">
+                <!-- <span class="section-tag">Apply</span> -->
+                <span class="section-title">Apply</span>
+            </div>
+            <div class="section-body">
+                <p class="question-prompt">In the image below, suppose that you pressed <strong>"up"</strong> on your keyboard. What direction do you expect the spoon to move in?</p>
+                <img class="env-image" src="alternate_envs/sim_screenshot.png" alt="Simulation screenshot"/>
+                <div class="choice-group">
+                    <label class="choice-label"><input type="radio" name="apply" value="up"> Up</label>
+                    <label class="choice-label"><input type="radio" name="apply" value="down"> Down</label>
+                    <label class="choice-label"><input type="radio" name="apply" value="left"> Left</label>
+                    <label class="choice-label"><input type="radio" name="apply" value="right"> Right</label>
+                </div>
+                <div class="confidence-row">
+                    <div class="confidence-label">
+                        <span>Confidence</span>
+                        <span class="confidence-value" id="apply-conf-val">5</span>
+                    </div>
+                    <input type="range" id="apply-confidence" name="apply-confidence" min="0" max="10" value="5"
+                        oninput="document.getElementById('apply-conf-val').textContent=this.value;updateProgress()">
+                    <div class="slider-endpoints"><span>Not at all confident</span><span>Extremely confident</span></div>
+                </div>
+            </div>
+        </div>
 
-                // Predict (checkboxes)
-                responses.predictActions = formData.getAll('predict-actions');
-                responses.analyzeConfidence = parseInt(formData.get('analyze-confidence'));
+        <!-- ANALYZE -->
+        <div class="section">
+            <div class="section-header">
+                <!-- <span class="section-tag">Analyze</span> -->
+                <span class="section-title">Analyze</span>
+            </div>
+            <div class="section-body">
+                <p class="question-prompt">Given the image below, what are the actions the agent is choosing between? <em>Select all that apply.</em></p>
+                <img class="env-image" src="alternate_envs/alternate_env1.png" alt="Alternate environment screenshot"/>
+                <div class="choice-group">
+                    <label class="choice-label"><input type="checkbox" name="analyze-actions" value="up"> Up</label>
+                    <label class="choice-label"><input type="checkbox" name="analyze-actions" value="down"> Down</label>
+                    <label class="choice-label"><input type="checkbox" name="analyze-actions" value="left"> Left</label>
+                    <label class="choice-label"><input type="checkbox" name="analyze-actions" value="right"> Right</label>
+                </div>
+                <div class="confidence-row">
+                    <div class="confidence-label">
+                        <span>Confidence</span>
+                        <span class="confidence-value" id="analyze-conf-val">5</span>
+                    </div>
+                    <input type="range" id="analyze-confidence" name="analyze-confidence" min="0" max="10" value="5"
+                        oninput="document.getElementById('analyze-conf-val').textContent=this.value;updateProgress()">
+                    <div class="slider-endpoints"><span>Not at all confident</span><span>Extremely confident</span></div>
+                </div>
+            </div>
+        </div>
 
-                // Create
-                responses.create = formData.get('create');
-                responses.createConfidence = parseInt(formData.get('create-confidence'));
+        <!-- CREATE -->
+        <div class="section">
+            <div class="section-header">
+                <!-- <span class="section-tag">Create</span> -->
+                <span class="section-title">Create</span>
+            </div>
+            <div class="section-body">
+                <p class="question-prompt">Describe what you think the agent's decision-making process looks like.</p>
+                <textarea id="create" name="create" placeholder="Describe the process as you understand it…"></textarea>
+                <div class="confidence-row">
+                    <div class="confidence-label">
+                        <span>Confidence</span>
+                        <span class="confidence-value" id="create-conf-val">5</span>
+                    </div>
+                    <input type="range" id="create-confidence" name="create-confidence" min="0" max="10" value="5"
+                        oninput="document.getElementById('create-conf-val').textContent=this.value;updateProgress()">
+                    <div class="slider-endpoints"><span>Not at all confident</span><span>Extremely confident</span></div>
+                </div>
+            </div>
+        </div>
 
-                // Trust & Satisfaction
-                responses.sus1 = parseInt(formData.get('sus-1'));
-                responses.sus2 = parseInt(formData.get('sus-2'));
-                responses.sus3 = parseInt(formData.get('sus-3'));
-                responses.sus4 = parseInt(formData.get('sus-4'));
-                responses.sus5 = parseInt(formData.get('sus-5'));
-                responses.sus6 = parseInt(formData.get('sus-6'));
-                responses.sus7 = parseInt(formData.get('sus-7'));
-                responses.sus8 = parseInt(formData.get('sus-8'));
-                responses.sus9 = parseInt(formData.get('sus-9'));
-                responses.sus10 = parseInt(formData.get('sus-10'));
+        <!-- SUS -->
+        <div class="divider-label">System Usability Scale</div>
 
-                console.log('Responses:', responses);
-                
-                // Store to local storage keyed by condition
-                localStorage.setItem('post_responses_' + cur_condition, JSON.stringify(responses));
-                
-                // Get the current condition for navigation
-                const nav_condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
-                const nav_condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+        <div class="section">
+            <div class="section-header">
+                <!-- <span class="section-tag">System Usability</span> -->
+                <span class="section-title">System Usability Scale</span>
+            </div>
+            <div class="section-body">
+                <p class="question-prompt" style="margin-bottom:20px;">For each statement, select how strongly you agree or disagree.</p>
+                <div class="sus-header-row">
+                    <div class="sus-scale-header">
+                        <span>strongly disagree</span><span></span><span></span><span></span><span>strongly agree</span>
+                    </div>
+                </div>
+                <div class="sus-grid" id="susGrid"></div>
+            </div>
+        </div>
 
-                // If we've finished all conditions, go to the end-of-study survey
-                if (nav_condition_num == "#" + nav_condition_order.length) { 
-                    window.location.href = 'final_survey.html';
-                }
-                // If there are more conditions left, move onto the next
-                else { 
-                    let number = parseInt(nav_condition_num.slice(1));
-                    let result = `#${number + 1}`;
-                    window.location.href = 'sim.html' + result + "," + nav_condition_order;
-                }
-            });
-        }); // Close DOMContentLoaded
+        <div class="submit-area">
+            <p class="submit-note">All responses are saved when you continue.</p>
+            <button type="submit">Continue</button>
+        </div>
 
-        document.querySelectorAll('.likert-scale[data-name]').forEach(scale => {
-            const name = scale.dataset.name;
-            const labels =   "Strongly Disagree <br> 1,2,3,4,Strongly Agree  <br> 5".split(',');
-            scale.innerHTML = labels.map((label, i) => `
-            <div class="likert-option">
-                <input type="radio" name="${name}" value="${i + 1}" ${i === 0 ? 'required' : ''}>
-                <span>${label.replace(' ', '<br>')}</span>
-            </div>`
-            ).join('');
+    </form>
+</main>
+
+<script>
+    const SUS_QUESTIONS = [
+        "I think that I would like to use this system frequently.",
+        "I found the system unnecessarily complex.",
+        "I thought the system was easy to use.",
+        "I think that I would need the support of a technical person to be able to use this system.",
+        "I found the various functions in this system were well integrated.",
+        "I thought there was too much inconsistency in this system.",
+        "I would imagine that most people would learn to use this system very quickly.",
+        "I found the system very cumbersome to use.",
+        "I felt very confident using the system.",
+        "I needed to learn a lot of things before I could get going with this system."
+    ];
+
+    // Build SUS grid
+    const susGrid = document.getElementById('susGrid');
+    SUS_QUESTIONS.forEach((q, i) => {
+        const n = i + 1;
+        const item = document.createElement('div');
+        item.className = 'sus-item';
+        item.innerHTML = `
+            <span class="sus-question"><span class="sus-num">${n}.</span>${q}</span>
+            <div class="sus-scale">
+                ${[1,2,3,4,5].map(v => `
+                <label>
+                    <input type="radio" name="sus-${n}" value="${v}" ${v===1?'required':''}>
+                    <div class="sus-radio">${v}</div>
+                </label>`).join('')}
+            </div>`;
+        susGrid.appendChild(item);
+    });
+
+    // Rough progress indicator
+    function updateProgress() {
+        const form = document.getElementById('surveyForm');
+        let filled = 0;
+        const total = 7;
+        ['recall','apply'].forEach(name => {
+            if (form.querySelector(`input[name="${name}"]:checked`)) filled++;
         });
-        
-    </script>
+        if (form.querySelector('#understand-system').value.trim()) filled++;
+        if (form.querySelector('#create').value.trim()) filled++;
+        let sus = 0;
+        for (let i = 1; i <= 10; i++) {
+            if (form.querySelector(`input[name="sus-${i}"]:checked`)) sus++;
+        }
+        filled += Math.round((sus / 10) * 3);
+        document.getElementById('progressFill').style.width = Math.min(100, Math.round((filled / total) * 100)) + '%';
+    }
+
+    document.getElementById('surveyForm').addEventListener('input', updateProgress);
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const userId = localStorage.getItem('studyUserId');
+        if (!userId) {
+            alert('No user ID found. Redirecting to start page.');
+            window.location.href = 'index.html';
+            return;
+        }
+        document.getElementById('userId').textContent = userId;
+
+        const condition_num = window.location.hash.substring(0, window.location.hash.indexOf(","));
+        const condition_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+        let cur_condition = condition_order.charAt(parseInt(condition_num.slice(1)) - 1);
+        document.getElementById('condition').textContent = cur_condition;
+
+        document.getElementById('surveyForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const responses = {
+                recall:             formData.get('recall'),
+                recallConfidence:   parseInt(formData.get('recall-confidence')),
+                understandSystem:   formData.get('understand-system'),
+                understandConfidence: parseInt(formData.get('understand-confidence')),
+                apply:              formData.get('apply'),
+                applyConfidence:    parseInt(formData.get('apply-confidence')),
+                analyzeActions:     formData.getAll('analyze-actions'),
+                analyzeConfidence:  parseInt(formData.get('analyze-confidence')),
+                create:             formData.get('create'),
+                createConfidence:   parseInt(formData.get('create-confidence')),
+            };
+            for (let i = 1; i <= 10; i++) responses[`sus${i}`] = parseInt(formData.get(`sus-${i}`));
+
+            console.log('Responses:', responses);
+            localStorage.setItem('post_responses_' + cur_condition, JSON.stringify(responses));
+
+            const nav_num   = window.location.hash.substring(0, window.location.hash.indexOf(","));
+            const nav_order = window.location.hash.substring(window.location.hash.indexOf(',') + 1).trim();
+
+            if (nav_num === "#" + nav_order.length) {
+                window.location.href = 'final_survey.html';
+            } else {
+                window.location.href = 'sim.html#' + (parseInt(nav_num.slice(1)) + 1) + ',' + nav_order;
+            }
+        });
+    });
+</script>
 </body>
 </html>
