@@ -223,6 +223,34 @@
         .continue-btn:active { transform: translateY(0); }
         .continue-btn::after { content: '→'; font-size: 16px; }
 
+        /* Reset button */
+        .reset-btn {
+            padding: 13px 24px;
+            background: var(--white);
+            color: var(--ink-mid);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .reset-btn:hover {
+            background: var(--surface-2);
+            border-color: var(--ink-light);
+            transform: translateY(-1px);
+        }
+
+        .reset-btn:active { transform: translateY(0); }
+        .reset-btn::before { content: '↺'; font-size: 16px; }
+
         /* Note card */
         .note-card {
             background: var(--surface-2);
@@ -288,9 +316,9 @@
                 <span class="task-title">Explore the environment</span>
             </div>
             <div class="task-body">
-                <p>Use the <strong>arrow keys</strong> to move the spoon. You will be sharing control over this spoon with an agent (represented by the robot gripper) to interact with a cooking environment.</p>
-                <p style="margin-top: 10px;">The agent is aware of <strong>3 component policies</strong> and may guide the motion of the spoon according to one of these policies based on the behaviour it believes you are trying to perform.</p>
-                <p style="margin-top: 10px;">Your goal is to <strong>identify these 3 policies</strong> based on the agent's guidance.</p>
+                <p>Use the <strong>arrow keys</strong> to move the spoon. You will be sharing control over the spoon with an agent (represented by the robot gripper) to interact with a cooking environment.</p>
+                <p style="margin-top: 10px;">In each of these simulations, you will be using one of six different teleoperation systems. In each, the agent will try to assist you by guiding the motion of the spoon towards one of 3 cooking actions that it believes you are trying to perform.</p>
+                <p style="margin-top: 10px;">You do not have to complete any particular task but your goal is to <strong>identify these 3 actions</strong> based on the agent's guidance.</p>
 
                 <div class="key-hints">
                     <div class="key-hint"><span class="key">↑</span></div>
@@ -304,9 +332,10 @@
 
         <div class="prompt-card">
             <strong>Interact with the simulator first</strong>
-            Interact with the system and try to identify all 3 policies before continuing to the survey.
+            Interact with the system and try to identify all 3 actions before continuing to the survey.
         </div>
 
+        <button class="reset-btn" id="resetButton">Reset Simulation</button>
         <button class="continue-btn" id="nextButton">Continue to Survey</button>
 
     </div>
@@ -338,6 +367,10 @@
     const canvas = document.getElementById('gameCanvas');
     canvas.addEventListener('touchstart', function(e) { e.preventDefault(); }, { passive: false });
     canvas.addEventListener('touchmove',  function(e) { e.preventDefault(); }, { passive: false });
+
+    document.getElementById('resetButton').addEventListener('click', () => {
+        window.location.reload();
+    });
 
     document.getElementById('nextButton').addEventListener('click', () => {
         window.location.href = 'post_survey.html' + window.location.hash;
