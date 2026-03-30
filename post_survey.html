@@ -304,7 +304,94 @@
             display: block;
         }
 
-        /* Choice pills */
+        /* Arrow keypad */
+        .arrow-keypad {
+            display: inline-grid;
+            grid-template-columns: repeat(3, 44px);
+            grid-template-rows: repeat(3, 44px);
+            gap: 5px;
+            margin: 14px 0 20px;
+        }
+
+        .arrow-key {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--ink-mid);
+            background: var(--white);
+            transition: all 0.15s;
+            user-select: none;
+            position: relative;
+        }
+
+        .arrow-key:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .arrow-key input[type="radio"],
+        .arrow-key input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .arrow-key:has(input:checked) {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-weight: 700;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .arrow-key.blank {
+            border: none;
+            background: transparent;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .arrow-key.center {
+            border: none;
+            background: transparent;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* Textarea */
+        textarea {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            color: var(--ink);
+            background: var(--surface);
+            resize: vertical;
+            min-height: 90px;
+            transition: border-color 0.15s;
+            line-height: 1.6;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+            background: var(--white);
+        }
+
+        textarea::placeholder { color: var(--ink-light); }
+
+        /* Choice pills (kept for analyze checkboxes) */
         .choice-group {
             display: flex;
             flex-wrap: wrap;
@@ -347,31 +434,6 @@
             color: var(--ink);
             font-weight: 500;
         }
-
-        /* Textarea */
-        textarea {
-            width: 100%;
-            padding: 13px 16px;
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 300;
-            color: var(--ink);
-            background: var(--surface);
-            resize: vertical;
-            min-height: 90px;
-            transition: border-color 0.15s;
-            line-height: 1.6;
-            outline: none;
-        }
-
-        textarea:focus {
-            border-color: var(--accent);
-            background: var(--white);
-        }
-
-        textarea::placeholder { color: var(--ink-light); }
 
         /* Confidence slider */
         .confidence-row {
@@ -638,12 +700,19 @@
             </div>
             <div class="section-body">
                 <p class="question-prompt">Given the image below, suppose that you pressed <strong>"up"</strong> on your keyboard. What direction do you expect the spoon to move in?</p>
-                <img class="env-image" src="alternate_envs/sim_screenshot.png" alt="Simulation screenshot"/>
-                <div class="choice-group">
-                    <label class="choice-label"><input type="radio" name="recall" value="up"> Up</label>
-                    <label class="choice-label"><input type="radio" name="recall" value="down"> Down</label>
-                    <label class="choice-label"><input type="radio" name="recall" value="left"> Left</label>
-                    <label class="choice-label"><input type="radio" name="recall" value="right"> Right</label>
+                <div style="display:flex; align-items:center; gap:16px; margin: 12px 0 20px;">
+                    <img class="env-image" src="alternate_envs/sim_screenshot.png" alt="Simulation screenshot" style="margin:0; flex-shrink:0;"/>
+                    <div class="arrow-keypad" style="margin:0; flex-shrink:0;">
+                        <label class="arrow-key" title="Up-Left"><input type="radio" name="recall" value="up-left"> ↖</label>
+                        <label class="arrow-key" title="Up"><input type="radio" name="recall" value="up"> ↑</label>
+                        <label class="arrow-key" title="Up-Right"><input type="radio" name="recall" value="up-right"> ↗</label>
+                        <label class="arrow-key" title="Left"><input type="radio" name="recall" value="left"> ←</label>
+                        <label class="arrow-key center"></label>
+                        <label class="arrow-key" title="Right"><input type="radio" name="recall" value="right"> →</label>
+                        <label class="arrow-key" title="Down-Left"><input type="radio" name="recall" value="down-left"> ↙</label>
+                        <label class="arrow-key" title="Down"><input type="radio" name="recall" value="down"> ↓</label>
+                        <label class="arrow-key" title="Down-Right"><input type="radio" name="recall" value="down-right"> ↘</label>
+                    </div>
                 </div>
                 <div class="field-error" id="recall-error" style="display:none;">Please select an answer.</div>
                 <div class="confidence-row">
@@ -687,13 +756,20 @@
                 <span class="required-badge"><span>*</span>Required</span>
             </div>
             <div class="section-body">
-                <p class="question-prompt">In the image below, suppose that you pressed <strong>"up"</strong> on your keyboard. What direction do you expect the spoon to move in?</p>
-                <img class="env-image" src="alternate_envs/sim_screenshot.png" alt="Simulation screenshot"/>
-                <div class="choice-group">
-                    <label class="choice-label"><input type="radio" name="apply" value="up"> Up</label>
-                    <label class="choice-label"><input type="radio" name="apply" value="down"> Down</label>
-                    <label class="choice-label"><input type="radio" name="apply" value="left"> Left</label>
-                    <label class="choice-label"><input type="radio" name="apply" value="right"> Right</label>
+                <p class="question-prompt">In the image below, suppose that you pressed <strong>"left"</strong> on your keyboard. What direction do you expect the spoon to move in?</p>
+                <div style="display:flex; align-items:center; gap:16px; margin: 12px 0 20px;">
+                    <img class="env-image" src="alternate_envs/sugar-bowl.png" alt="Simulation screenshot" style="margin:0; flex-shrink:0;"/>
+                    <div class="arrow-keypad" style="margin:0; flex-shrink:0;">
+                        <label class="arrow-key" title="Up-Left"><input type="radio" name="apply" value="up-left"> ↖</label>
+                        <label class="arrow-key" title="Up"><input type="radio" name="apply" value="up"> ↑</label>
+                        <label class="arrow-key" title="Up-Right"><input type="radio" name="apply" value="up-right"> ↗</label>
+                        <label class="arrow-key" title="Left"><input type="radio" name="apply" value="left"> ←</label>
+                        <label class="arrow-key center"></label>
+                        <label class="arrow-key" title="Right"><input type="radio" name="apply" value="right"> →</label>
+                        <label class="arrow-key" title="Down-Left"><input type="radio" name="apply" value="down-left"> ↙</label>
+                        <label class="arrow-key" title="Down"><input type="radio" name="apply" value="down"> ↓</label>
+                        <label class="arrow-key" title="Down-Right"><input type="radio" name="apply" value="down-right"> ↘</label>
+                    </div>
                 </div>
                 <div class="field-error" id="apply-error" style="display:none;">Please select an answer.</div>
                 <div class="confidence-row">
@@ -716,12 +792,19 @@
             </div>
             <div class="section-body">
                 <p class="question-prompt">Given the image below, what are the actions the agent is choosing between? <em>Select all that apply.</em></p>
-                <img class="env-image" src="alternate_envs/alternate_env1.png" alt="Alternate environment screenshot"/>
-                <div class="choice-group">
-                    <label class="choice-label"><input type="checkbox" name="analyze-actions" value="up"> Up</label>
-                    <label class="choice-label"><input type="checkbox" name="analyze-actions" value="down"> Down</label>
-                    <label class="choice-label"><input type="checkbox" name="analyze-actions" value="left"> Left</label>
-                    <label class="choice-label"><input type="checkbox" name="analyze-actions" value="right"> Right</label>
+                <div style="display:flex; align-items:center; gap:16px; margin: 12px 0 20px;">
+                    <img class="env-image" src="alternate_envs/right-bottom-corner.png" alt="Alternate environment screenshot" style="margin:0; flex-shrink:0;"/>
+                    <div class="arrow-keypad" style="margin:0; flex-shrink:0;">
+                        <label class="arrow-key" title="Up-Left"><input type="checkbox" name="analyze-actions" value="up-left"> ↖</label>
+                        <label class="arrow-key" title="Up"><input type="checkbox" name="analyze-actions" value="up"> ↑</label>
+                        <label class="arrow-key" title="Up-Right"><input type="checkbox" name="analyze-actions" value="up-right"> ↗</label>
+                        <label class="arrow-key" title="Left"><input type="checkbox" name="analyze-actions" value="left"> ←</label>
+                        <label class="arrow-key center"></label>
+                        <label class="arrow-key" title="Right"><input type="checkbox" name="analyze-actions" value="right"> →</label>
+                        <label class="arrow-key" title="Down-Left"><input type="checkbox" name="analyze-actions" value="down-left"> ↙</label>
+                        <label class="arrow-key" title="Down"><input type="checkbox" name="analyze-actions" value="down"> ↓</label>
+                        <label class="arrow-key" title="Down-Right"><input type="checkbox" name="analyze-actions" value="down-right"> ↘</label>
+                    </div>
                 </div>
                 <div class="field-error" id="analyze-error" style="display:none;">Please select at least one option.</div>
                 <div class="confidence-row">
@@ -875,7 +958,6 @@
             };
 
             const sections = form.querySelectorAll('.section');
-            // Map section index to section element by order: 0=recall,1=understand,2=apply,3=analyze,4=create,5=sus
             const sectionEls = Array.from(sections);
 
             // Recall
@@ -922,7 +1004,6 @@
                     ? '1 section is incomplete — it\'s highlighted below.'
                     : `${errors.length} sections are incomplete — they\'re highlighted below.`;
                 banner.classList.add('visible');
-                // Scroll to first error section
                 const firstErrorSection = form.querySelector('.section.has-error');
                 if (firstErrorSection) {
                     firstErrorSection.scrollIntoView({ behavior: 'smooth', block: 'center' });

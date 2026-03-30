@@ -346,8 +346,45 @@
                     <label class="choice-label"><input type="checkbox" name="robot-experience" value="household"> Household robots</label>
                     <label class="choice-label"><input type="checkbox" name="robot-experience" value="industrial"> Industrial robots</label>
                     <label class="choice-label"><input type="checkbox" name="robot-experience" value="social"> Social robots</label>
+                    <label class="choice-label"><input type="checkbox" name="robot-experience" value="research"> Research robots</label>
+                    <label class="choice-label"><input type="checkbox" name="robot-experience" value="other"> Other robots</label>
                 </div>
                 <div class="error-message" id="robot-experience-error">Please select at least one option.</div>
+            </div>
+        </div>
+
+        <!-- AI Interactions -->
+        <div class="section" id="section-ai-experience">
+            <div class="section-header">
+                <span class="section-title">How familiar are you with AI chat tools like Claude, ChatGPT, or Gemini?</span>
+                <span class="required-badge">Required</span>
+            </div>
+            <div class="section-body">
+                <div class="choice-group">
+                    <label class="choice-label"><input type="radio" name="ai-experience" value="none" required> Not familiar — I've never used one</label>
+                    <label class="choice-label"><input type="radio" name="ai-experience" value="rarely"> Slightly familiar — I've tried one once or twice</label>
+                    <label class="choice-label"><input type="radio" name="ai-experience" value="sometimes"> Somewhat familiar — I use them one or more times per month</label>
+                    <label class="choice-label"><input type="radio" name="ai-experience" value="quite"> Quite familiar — I use them one or more times per week</label>
+                    <label class="choice-label"><input type="radio" name="ai-experience" value="often"> Very familiar — I use them daily</label>
+                </div>
+                <div class="error-message" id="ai-frequency-error">Please select an option.</div>
+            </div>
+        </div>
+
+        <!-- AI Building -->
+        <div class="section" id="section-ai-building">
+            <div class="section-header">
+                <span class="section-title">Have you ever programmed an AI or machine learning system?</span>
+                <span class="required-badge">Required · Select all that apply</span>
+            </div>
+            <div class="section-body">
+                <div class="choice-group">
+                    <label class="choice-label"><input type="radio" name="ai-building" value="none" required> No, never</label>
+                    <label class="choice-label"><input type="radio" name="ai-building" value="once"> Yes, once or twice</label>
+                    <label class="choice-label"><input type="radio" name="ai-building" value="some"> Yes, a few times</label>
+                    <label class="choice-label"><input type="radio" name="ai-building" value="regular"> Yes, it's part of my regular work or study</label>
+                </div>
+                <div class="error-message" id="ai-building-error">Please select an option.</div>
             </div>
         </div>
 
@@ -383,6 +420,8 @@
                 education:        formData.get('education'),
                 gamingFrequency:  formData.get('gaming-frequency'),
                 robotExperience:  formData.getAll('robot-experience'),
+                aiExperience:     formData.getAll('ai-experience'),
+                aiBuilding:     formData.getAll('ai-building'),
             };
 
             console.log('Survey responses:', responses);
@@ -420,6 +459,18 @@
                     selector: 'input[name="robot-experience"]:checked',
                     errorId: 'robot-experience-error',
                     sectionId: 'section-robot-experience',
+                    type: 'checkbox'
+                },
+                {
+                    selector: 'input[name="ai-experience"]:checked',
+                    errorId: 'ai-experience-error',
+                    sectionId: 'section-ai-experience',
+                    type: 'checkbox'
+                },
+                {
+                    selector: 'input[name="ai-building"]:checked',
+                    errorId: 'ai-building-error',
+                    sectionId: 'section-ai-building',
                     type: 'checkbox'
                 },
             ];
