@@ -141,8 +141,11 @@ class MaxEntPredictor:
 
 class CRFPredictor:
     """
-    Linear-chain CRF predictor over policy hypotheses.
-    Fixed version with proper temporal decay and adaptation.
+    CRF-inspired online predictor over policy hypotheses for shared autonomy.
+
+    Uses unary potentials (Q-values) and policy-aware pairwise potentials
+    to define an emission model, then performs online Bayesian filtering
+    with exponential forgetting to maintain a belief over user goals.
     """
 
     def __init__(
@@ -163,25 +166,31 @@ class CRFPredictor:
         self.eps = eps
         self.tau = tau
         self.pairwise_weight = pairwise_weight
-        self.alpha = alpha  # forgetting rate (like BayesianPredictor)
-        self.p_switch = p_switch  # goal-switch prior
-        self.beta = beta  # posterior temperature
+        self.alpha = alpha          # forgetting rate: decays old evidence
+        self.p_switch = p_switch    # goal-switch prior (uniform mixing)
+        self.beta = beta            # posterior temperature
 
         self.log_post = np.log(np.ones(self.N) / self.N + 1e-12)
         self.prev_action = None
 
     def log_likelihood(self, state, user_action, policy):
-        """Compute log P(u | pi) with optional temporal context."""
+        """
+        Compute log P(user_action | state, policy) using CRF-style potentials.
+
+        The pairwise potential is now policy-aware: it rewards action repetition
+        only when the policy itself would prefer that action, so it actually
+        helps discriminate between goals rather than boosting all policies equally.
+        """
         logits = np.zeros(self.action_space_size)
 
         for a in range(self.action_space_size):
-            # Unary potential from Q-values
+            # Unary potential: how much this policy values action a in this state
             unary = self.unary_fn(policy, state, a)
 
-            # Pairwise potential (temporal smoothness)
+            # Pairwise potential: policy-aware temporal consistency
             pair = 0.0
             if self.prev_action is not None:
-                pair = self.pairwise_fn(self.prev_action, a)
+                pair = self.pairwise_fn(policy, state, self.prev_action, a)
 
             logits[a] = unary + pair
 
@@ -194,8 +203,12 @@ class CRFPredictor:
 
     def update(self, state, user_action):
         """
-        Update belief with exponential forgetting and goal persistence.
-        Mirrors the stable update logic from BayesianPredictor.
+        Bayesian belief update with exponential forgetting and goal persistence.
+
+        Key fix: old evidence is decayed by (1 - alpha), but new evidence
+        (log-likelihoods) is added at full strength rather than scaled by alpha.
+        This gives proper online filtering where recent observations have full
+        impact while old evidence gradually fades.
         """
         # 1. Compute log-likelihoods for all policies
         log_likes = np.array([
@@ -203,30 +216,31 @@ class CRFPredictor:
             for pi in self.policies
         ])
 
-        # 2. Exponential forgetting (prevents unbounded accumulation)
-        self.log_post = (1 - self.alpha) * self.log_post + self.alpha * log_likes
+        # 2. Bayesian update with exponential forgetting:
+        #    - Decay accumulated log-posterior (old evidence fades)
+        #    - Add new log-likelihood at full strength
+        self.log_post = (1 - self.alpha) * self.log_post + log_likes
 
         # 3. Normalize in probability space
         max_log = np.max(self.log_post)
         post = np.exp(self.log_post - max_log)
         post /= np.sum(post)
 
-        # 4. Goal-switch prior (intent persistence)
-        if self.p_switch > 0:
-            post = (1 - self.p_switch) * post + self.p_switch * (1.0 / self.N)
+        # 4. Goal-switch prior: mix with uniform to allow intent changes.
+        #    This subsumes the old eps-smoothing, so we only need one
+        #    uniform-mixing step. Use whichever rate is larger.
+        mix_rate = max(self.p_switch, self.eps)
+        post = (1 - mix_rate) * post + mix_rate * (1.0 / self.N)
 
-        # 5. Posterior temperature (optional smoothing)
+        # 5. Posterior temperature (optional sharpening/flattening)
         if self.beta != 1.0:
             post = post ** (1.0 / self.beta)
             post /= np.sum(post)
 
-        # 6. Light smoothing (numerical safety)
-        post = (1 - self.eps) * post + self.eps * (1.0 / self.N)
-
-        # 7. Store back in log space
+        # 6. Store back in log space
         self.log_post = np.log(post + 1e-12)
 
-        # 8. Update temporal context
+        # 7. Update temporal context
         self.prev_action = user_action
 
         return post
@@ -243,15 +257,24 @@ class CRFPredictor:
         self.prev_action = None
 
     def unary_fn(self, policy, state, action):
-        """Unary potential from Q-values."""
+        """Unary potential: Q-value scaled by temperature."""
         Q = policy.get_q_value(state, action)
         return Q / self.tau
 
-    def pairwise_fn(self, prev_a, a):
+    def pairwise_fn(self, policy, state, prev_a, a):
         """
-        Pairwise potential encouraging temporal smoothness.
-        Positive when action repeats (natural persistence).
+        Policy-aware pairwise potential for temporal consistency.
+
+        Instead of a flat bonus for repeating any action (which helps no
+        policy more than another), this rewards repetition proportional to
+        how much the *policy* values the repeated action. This makes the
+        pairwise term discriminative: if the user repeats an action that
+        policy_i strongly prefers, policy_i gets a bigger emission
+        probability boost than policy_j which doesn't value that action.
         """
         if prev_a == a:
-            return self.pairwise_weight
+            # Scale the persistence bonus by how much this policy wants
+            # the repeated action (normalized Q-value as a soft indicator)
+            q_val = policy.get_q_value(state, a) / self.tau
+            return self.pairwise_weight * max(q_val, 0.0)
         return 0.0
