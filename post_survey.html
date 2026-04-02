@@ -992,8 +992,7 @@
             }
             if (susMissing > 0) {
                 document.getElementById('sus-error').textContent =
-                    susMissing === 1 ? 'Please respond to all usability statements (1 remaining).'
-                                     : `Please respond to all usability statements (${susMissing} remaining).`;
+                    susMissing === 1 ? 'Please respond to all usability statements (1 remaining).': `Please respond to all usability statements (${susMissing} remaining).`;
                 setError('sus-error', sectionEls[5]);
             } else { clearError('sus-error', sectionEls[5]); }
 
