@@ -174,207 +174,149 @@ class BayesianPredictor {
 // -------------------------
 // MaxEnt Predictor
 // Based on: Javdani et al., "Shared Autonomy via Hindsight Optimization" (2015)
-// Section IV: Modelling the User Policy
+// Mirrors GoalPredictor.py from ada_assistance_policy
 // -------------------------
 
 class MaxEntPredictor {
     /**
-     * Bayesian predictor over a discrete set of policies/goals using
-     * Maximum Entropy Inverse Optimal Control (MaxEnt IOC).
+     * Goal predictor using hindsight optimization (Javdani et al. 2015).
      *
-     * The user is modelled as approximately optimizing a cost function for
-     * their intended goal. The per-step action likelihood follows from the
-     * MaxEnt IOC framework (Ziebart et al. 2008):
+     * The update rule (from GoalPredictor.py) is:
+     *   log P(g) -= Q(s, u, g) - V(s, g)
      *
-     *   π(u | x, g) = exp(V_g(x) − Q_g(x, u))
-     *               ∝ exp(Q(x, u) / τ)   [softmax over Q-values]
+     * where V(s, g) = max_a Q(s, a, g) is the hindsight value — the best
+     * reward achievable from state s under goal g. Since our Q-tables are
+     * reward-based (higher = better), this is the hard-max approximation to
+     * the soft-max value function from the paper.
      *
-     * The posterior over goals is updated via Bayes' rule at each step:
+     * The intuition: if the user's action u is optimal for goal g
+     * (Q(s,u,g) = V(s,g)), the belief is unchanged. If it is suboptimal,
+     * the belief in g decreases proportionally to the regret V - Q.
      *
-     *   log p(g | ξ^{0→t}) ∝ log p(g) + Σ_t log π(u_t | x_t, g)
+     * No forgetting factor is used — this is pure Bayesian accumulation
+     * as in the paper. Collapse is prevented by clipping the max probability
+     * to maxProbAnyGoal (= 0.99), mirroring clip_prob() in GoalPredictor.py.
      *
-     * Only user inputs drive the update — NOT robot assistance actions —
-     * to avoid the positive-feedback loop described in Section IV of the paper.
-     *
-     * @param {Array}  policies        - Array of policy objects, each with a
-     *                                   getQValue(state, action) method.
+     * @param {Array}  policies        - Array of policy objects with getQValue(state, action).
      * @param {number} actionSpaceSize - Number of discrete actions.
-     * @param {number} tau             - Temperature for the softmax likelihood.
-     *                                   Lower τ → more peaked (rational agent);
-     *                                   higher τ → more uniform (random agent).
-     * @param {number} eps             - Smoothing factor to prevent posterior
-     *                                   collapse (adds eps/N to each goal).
+     * @param {number} tau             - Temperature scaling Q-values before the update.
+     * @param {number} eps             - Unused; kept for interface compatibility.
      */
-    constructor(policies, actionSpaceSize = 4, tau = 0.8, eps = 1e-2) {
+    constructor(policies, actionSpaceSize = 4, tau = 0.8, eps = 1e-2, decay = 0.95) {
         this.policies = policies;
         this.N = policies.length;
         this.actionSpaceSize = actionSpaceSize;
         this.tau = tau;
-        this.eps = eps;
+        this.decay = decay;
 
-        // Initialize uniform log-prior: log(1/N) for each goal
+        this.maxProbAnyGoal = 0.85;
+        this.logMaxProbAnyGoal = Math.log(0.85);
+
         this._initLogPost();
     }
 
     _initLogPost() {
-        const logUniform = Math.log(1.0 / this.N);
+        const logUniform = Math.log(1.0 / this.N + 1e-12);
         this.logPost = new Array(this.N).fill(logUniform);
     }
 
     /**
-     * Compute log π(u | x, g) under the MaxEnt IOC model.
+     * Update belief using the hindsight optimization rule:
+     *   log P(g) += (Q(s, u, g) - V(s, g)) / tau
      *
-     * From Section IV of the paper:
-     *   π(u | x, g) = exp(V_g(x) − Q_g(x, u))
-     *
-     * Using the second-order approximation from Section VII (following
-     * Dragan & Srinivasa 2013), the soft-min value function V_g is
-     * approximated by the hard-min value function, giving:
-     *
-     *   log π(u | x, g) = Q(x, u)/τ − log Σ_a exp(Q(x, a)/τ)
-     *
-     * i.e. a log-softmax over Q-values scaled by temperature τ.
-     *
-     * @param {*}      state      - Current robot state x.
-     * @param {number} userAction - Index of the observed user action u.
-     * @param {Object} policy     - Policy object for goal g.
-     * @returns {number} log π(userAction | state, goal)
+     * The term (Q(s,u,g) - V(s,g)) / tau is always <= 0 (regret),
+     * so each update can only decrease or leave unchanged each goal's log-prob.
+     * Normalization then re-scales the distribution.
      */
-    logLikelihood(state, userAction, policy) {
-        // Collect Q-values for all actions
-        const logits = [];
-        for (let a = 0; a < this.actionSpaceSize; a++) {
-            logits.push(policy.getQValue(state, a) / this.tau);
-        }
-
-        // Numerically stable log-sum-exp
-        const maxLogit = Math.max(...logits);
-        const logSumExp = Math.log(
-            logits.reduce((sum, l) => sum + Math.exp(l - maxLogit), 0)
-        ) + maxLogit;
-
-        // log π(u | x, g) = logit[u] − log Σ_a exp(logit[a])
-        return logits[userAction] - logSumExp;
-    }
-
-    /**
-     * Update the belief over goals/policies using a proper Bayesian update.
-     *
-     * From Section IV of the paper, goal posteriors are updated via Bayes' rule:
-     *
-     *   p(g | ξ^{0→t}) ∝ p(ξ^{0→t} | g) · p(g)
-     *   p(ξ^{0→t} | g) = Π_t π(u_t | x_t, g)
-     *
-     * In log-space this is a simple accumulation:
-     *
-     *   log p(g | ξ^{0→t}) += log π(u_t | x_t, g)
-     *
-     * Epsilon-smoothing is applied after normalization to prevent the
-     * posterior from collapsing onto a single goal.
-     *
-     * Note: the `alpha` parameter from the original heuristic implementation
-     * has no counterpart in the paper's formulation. If you want to forget
-     * older observations (e.g. for non-stationary goals), pass alpha < 1 to
-     * scale down the accumulated log-posterior before adding the new update,
-     * i.e. logPost ← alpha · logPost + logLikelihood. Defaults to 1 (no decay).
-     *
-     * @param {*}      state      - Current robot state x (from user input only,
-     *                              NOT after robot assistance is applied).
-     * @param {number} userAction - Index of the observed user action u.
-     * @param {number} alpha      - Optional forgetting/decay factor in (0, 1].
-     *                              1.0 = full Bayesian accumulation (paper default).
-     *                              < 1 = exponential forgetting of old evidence.
-     * @returns {number[]} Normalized probability distribution over goals.
-     */
-    update(state, userAction, alpha = 1.0) {
-        // Compute log-likelihood of the observed action under each goal
+    update(state, userAction) {
+        // Decay prior evidence so the user can redirect
+        // (practical concession — pure accumulation locks on near goals)
         for (let i = 0; i < this.N; i++) {
-            const ll = this.logLikelihood(state, userAction, this.policies[i]);
-            // alpha=1: pure Bayesian accumulation (as in the paper)
-            // alpha<1: exponential forgetting — older evidence down-weighted
-            this.logPost[i] = alpha * this.logPost[i] + ll;
+            const logUniform = Math.log(1.0 / this.N + 1e-12);
+            this.logPost[i] = this.decay * this.logPost[i] + (1 - this.decay) * logUniform;
         }
 
-        // Normalize to probability, apply epsilon-smoothing, store in log-space
-        return this._normalizeAndSmooth();
+        for (let i = 0; i < this.N; i++) {
+            const policy = this.policies[i];
+
+            // Collect Q-values for all actions
+            const qValues = [];
+            for (let a = 0; a < this.actionSpaceSize; a++) {
+                qValues.push(policy.getQValue(state, a));
+            }
+
+            // V(s, g) = max_a Q(s, a, g)  [hindsight value, reward-based]
+            const value = Math.max(...qValues);
+            const qUser = policy.getQValue(state, userAction);
+
+            // log P(g) += (Q(s,u,g) - V(s,g)) / tau  [always <= 0]
+            this.logPost[i] += (qUser - value) / this.tau;
+        }
+
+        // Normalize via log-sum-exp
+        this._normalizeLogDist();
+
+        // Cap max probability at 0.99 (mirrors clip_prob in GoalPredictor.py)
+        this._clipProb();
+
+        return this.getProb();
     }
 
     /**
-     * Return the current posterior distribution over goals as probabilities.
-     * @returns {number[]} Probability distribution (sums to 1).
+     * Normalize log distribution so probabilities sum to 1.
+     * Mirrors normalize_log_distribution() in GoalPredictor.py.
      */
+    _normalizeLogDist() {
+        const maxLog = Math.max(...this.logPost);
+        const logSumExp = Math.log(
+            this.logPost.reduce((sum, lp) => sum + Math.exp(lp - maxLog), 0)
+        ) + maxLog;
+        this.logPost = this.logPost.map(lp => lp - logSumExp);
+    }
+
+    /**
+     * Prevent any single goal from exceeding maxProbAnyGoal.
+     * Redistributes the excess probability uniformly to all other goals.
+     * Mirrors clip_prob() in GoalPredictor.py.
+     */
+    _clipProb() {
+        if (this.N <= 1) return;
+
+        const maxIdx = this.logPost.indexOf(Math.max(...this.logPost));
+        if (this.logPost[maxIdx] <= this.logMaxProbAnyGoal) return;
+
+        const maxProb = Math.exp(this.logPost[maxIdx]);
+        const diff = maxProb - this.maxProbAnyGoal;
+        const diffPer = diff / (this.N - 1);
+
+        // Add log(1 + diff_per / p_i) to each goal (increases non-max goals)
+        for (let i = 0; i < this.N; i++) {
+            const p = Math.exp(this.logPost[i]);
+            this.logPost[i] += Math.log(1 + diffPer / (p + 1e-12));
+        }
+
+        // Hard-cap the max goal
+        this.logPost[maxIdx] = this.logMaxProbAnyGoal;
+    }
+
     getProb() {
-        const maxLogP = Math.max(...this.logPost);
-        const unnorm = this.logPost.map(lp => Math.exp(lp - maxLogP));
+        const maxLog = Math.max(...this.logPost);
+        const unnorm = this.logPost.map(lp => Math.exp(lp - maxLog));
         const Z = unnorm.reduce((a, b) => a + b, 0);
         return unnorm.map(p => p / Z);
     }
 
-    /**
-     * Reset the belief to a uniform prior over all goals.
-     */
     reset() {
         this._initLogPost();
     }
-
-    // ---- Private helpers ----
-
-    _normalizeAndSmooth() {
-        // Convert log-posterior → probabilities (numerically stable)
-        const maxLogP = Math.max(...this.logPost);
-        const unnorm = this.logPost.map(lp => Math.exp(lp - maxLogP));
-        const Z = unnorm.reduce((a, b) => a + b, 0);
-        let post = unnorm.map(p => p / Z);
-
-        // Epsilon-smoothing: prevents posterior collapse and handles
-        // goals with near-zero probability gracefully
-        const uniform = 1.0 / this.N;
-        post = post.map(p => (1 - this.eps) * p + this.eps * uniform);
-
-        // Store back in log-space
-        this.logPost = post.map(p => Math.log(p + 1e-12));
-
-        return post;
-    }
 }
 
-// =============================================================================
-// CRFPredictor — Anticipatory Temporal Conditional Random Field (ATCRF)
-//
-// Based on: Koppula & Saxena, "Anticipating Human Activities using Object
-//           Affordances for Reactive Robotic Response" (2013)
-//
-// Paper mapping:
-//   policies[]       → ATCRF particles g^{t,d(s)}          (Section III-C)
-//   state            → observations Φ_t = {Φ_H, Φ_L}       (Section III-A)
-//   userAction       → observed sub-activity label a_i       (Eq. 2)
-//   logPost[]        → log particle weights log ŵ_t^s        (Eq. 4-5)
-//   temporalSegments → observed temporal segments 1..k       (Section III-A)
-//
-// Each policy must expose at minimum:
-//   policy.getQValue(state, action) → number
-//
-// Optional policy methods for richer CRF potentials:
-//   policy.getAffordanceScore(state, action)   → number   (Eq. 7)
-//   policy.getSpatialScore(state, action)      → number   (spatial Ψ_E)
-//   policy.getAnticipatedAction(state)         → {action, state?} | null
-// =============================================================================
-
+// -------------------------
+// CRF Predictor
+// -------------------------
 class CRFPredictor {
-    /**
-     * Anticipatory Temporal CRF predictor over policy hypotheses.
-     *
-     * @param {object[]} policies  - Array of policy objects (ATCRF particles)
-     * @param {number} actionSpaceSize - Number of discrete actions |A|
-     * @param {number} eps         - Smoothing weight (prevents particle depletion)
-     * @param {number} tau         - Temperature for sub-activity potential Ψ_A
-     * @param {number} pairwiseWeight - Strength of temporal edge potential Ψ_E
-     * @param {number} alpha       - Exponential forgetting / sequential update rate
-     * @param {number} pSwitch     - Activity-transition mixing (particle diversification)
-     * @param {number} beta        - Posterior sharpening temperature
-     */
     constructor(policies, actionSpaceSize = 4, eps = 0.01, tau = 0.8,
-                pairwiseWeight = 0.3, alpha = 0.05, pSwitch = 0.02, beta = 1.0) {
+                pairwiseWeight = 1.5, alpha = 0.15, pSwitch = 0.02, beta = 1.0) {
         this.policies = policies;
         this.N = policies.length;
         this.actionSpaceSize = actionSpaceSize;
@@ -385,60 +327,19 @@ class CRFPredictor {
         this.pSwitch = pSwitch;
         this.beta = beta;
 
-        // Particle weights in log space (Eq. 4): uniform initialization
         this.logPost = new Array(this.N).fill(Math.log(1.0 / this.N + 1e-12));
-
-        // Temporal context for graph edges across segments (Section III-A)
         this.prevAction = null;
-
-        // Observed temporal segment history: list of {state, action} pairs
-        // representing the CRF graph G^t over past segments 1..k
-        this.temporalSegments = [];
     }
 
-    // =========================================================================
-    // CRF Log-Likelihood  (Section III-A, Eq. 2)
-    //
-    // P(O,A | H,L) ∝  ∏ Ψ_O(o_i | ℓ_{o_i})        [affordance unary]
-    //                × ∏ Ψ_A(a_i | h_{a_i})          [sub-activity unary]
-    //                × ∏ Ψ_E(v_i, v_j | ·)           [edge potentials]
-    //
-    // We compute unnormalized log-potentials for every action, then normalize
-    // via the partition function Z to obtain P(userAction | policy, state).
-    // =========================================================================
-
-    /**
-     * Compute log P(userAction | state, policy) using the CRF factorization.
-     *
-     * @param {*}      state      - Current observation Φ_t
-     * @param {number}  userAction - Observed discrete action
-     * @param {object}  policy     - One ATCRF particle to score against
-     * @returns {number} log-probability
-     */
     logLikelihood(state, userAction, policy) {
-        const logits = [];
+        const logits = new Array(this.actionSpaceSize).fill(0);
 
         for (let a = 0; a < this.actionSpaceSize; a++) {
-            // ---- Ψ_A : sub-activity unary potential (Eq. 2) ----
-            const psiA = this._subActivityPotential(policy, state, a);
-
-            // ---- Ψ_O : object-affordance unary potential (Eq. 7) ----
-            //   ψ_o = ∏_i ψ_{dist_i}  ×  ∏_j ψ_{ori_j}
-            const psiO = this._affordancePotential(policy, state, a);
-
-            // ---- Ψ_E (temporal) : edge across consecutive segments ----
-            let psiEtemporal = 0.0;
-            if (this.prevAction !== null) {
-                psiEtemporal = this._temporalEdgePotential(this.prevAction, a);
-            }
-
-            // ---- Ψ_E (spatial) : edge within a temporal segment ----
-            const psiEspatial = this._spatialEdgePotential(policy, state, a);
-
-            logits.push(psiA + psiO + psiEtemporal + psiEspatial);
+            const unary = this.unaryFn(policy, state, a);
+            const pair = this.prevAction !== null ? this.pairwiseFn(this.prevAction, a) : 0.0;
+            logits[a] = unary + pair;
         }
 
-        // Partition function Z (log-sum-exp for numerical stability)
         const maxLogit = Math.max(...logits);
         const expLogits = logits.map(l => Math.exp(l - maxLogit));
         const Z = expLogits.reduce((a, b) => a + b, 0);
@@ -447,140 +348,43 @@ class CRFPredictor {
         return Math.log(probs[userAction] + 1e-12);
     }
 
-    // =========================================================================
-    // ATCRF Particle Scoring  (Section III-B, Eq. 3)
-    //
-    // P_{G^{t,d}}(H,O,L,A | Φ_H, Φ_L) =
-    //      P(O^{t,d}, A^{t,d} | H^{t,d}, L^{t,d})     [CRF over augmented graph]
-    //    × P(H^{t,d}, L^{t,d} | Φ_H, Φ_L)              [observation model]
-    //
-    // The first term extends Eq. 2 over the augmented graph G^{t,d}.
-    // The second term is handled implicitly by the observation (state).
-    //
-    // When a policy supports anticipation, we additionally score the
-    // anticipated temporal segment k+1 and its edges to segment k.
-    // =========================================================================
-
-    /**
-     * Score a single ATCRF particle (policy) against the current observation.
-     *
-     * @param {*}      state      - Current observation Φ_t
-     * @param {number}  userAction - Observed action
-     * @param {object}  policy     - ATCRF particle
-     * @returns {number} Log-score for importance sampling weight (Eq. 5)
-     */
-    _scoreATCRF(state, userAction, policy) {
-        // --- Score over observed graph G^t (Eq. 2) ---
-        let score = this.logLikelihood(state, userAction, policy);
-
-        // --- Anticipatory augmentation: score future segment k+1 (Eq. 3) ---
-        if (typeof policy.getAnticipatedAction === 'function') {
-            const anticipated = policy.getAnticipatedAction(state);
-            if (anticipated !== null && anticipated.action != null) {
-                const futureState = anticipated.state || state;
-
-                // Ψ_A for anticipated sub-activity node
-                const futureUnary = this._subActivityPotential(
-                    policy, futureState, anticipated.action
-                );
-
-                // Ψ_E temporal edge from observed segment k to anticipated k+1
-                const futureEdge = this._temporalEdgePotential(
-                    userAction, anticipated.action
-                );
-
-                // Ψ_O affordance potential for anticipated node
-                const futureAffordance = this._affordancePotential(
-                    policy, futureState, anticipated.action
-                );
-
-                // Discount anticipated segment (future is less certain)
-                score += this.alpha * (futureUnary + futureEdge + futureAffordance);
-            }
-        }
-
-        return score;
-    }
-
-    // =========================================================================
-    // Particle Weight Update  (Section III-C, Eqs. 4-5)
-    //
-    // p(g^{t,d} | Φ_t) ≈ Σ_s  ŵ_t^s  δ_{g^{t,d(s)}}(g^{t,d})     (Eq. 4)
-    //
-    // ŵ_t^s  ∝  p(g^{t,d(s)} | Φ_t)  /  q(g^{t,d(s)} | Φ_t)       (Eq. 5)
-    //
-    // We update weights sequentially as new observations arrive, applying:
-    //   1. ATCRF scoring for each particle
-    //   2. Exponential forgetting for temporal adaptation
-    //   3. Normalization of importance weights
-    //   4. Activity-transition prior (particle diversification)
-    //   5. Posterior sharpening
-    //   6. Smoothing to prevent particle depletion
-    // =========================================================================
-
-    /**
-     * Update posterior over particles given a new observation.
-     *
-     * @param {*}      state      - Current observation Φ_t
-     * @param {number}  userAction - Observed action
-     * @returns {number[]} Normalized posterior probabilities over policies
-     */
     update(state, userAction) {
-        // 1. Score each ATCRF particle (Eq. 5 numerator)
-        const logLikes = [];
-        for (let i = 0; i < this.N; i++) {
-            logLikes.push(this._scoreATCRF(state, userAction, this.policies[i]));
-        }
+        // 1. Compute log-likelihoods for all policies
+        const logLikes = this.policies.map(pi => this.logLikelihood(state, userAction, pi));
 
-        // 2. Sequential importance update with exponential forgetting
-        //    Blends prior weight with new evidence over time
-        this.logPost = this.logPost.map((lp, i) =>
-            (1 - this.alpha) * lp + this.alpha * logLikes[i]
-        );
+        // 2. Exponential forgetting
+        this.logPost = this.logPost.map((lp, i) => (1 - this.alpha) * lp + this.alpha * logLikes[i]);
 
-        // 3. Normalize importance weights (Eq. 5 denominator)
+        // 3. Normalize in probability space
         const maxLog = Math.max(...this.logPost);
         let post = this.logPost.map(lp => Math.exp(lp - maxLog));
         let sumPost = post.reduce((a, b) => a + b, 0);
         post = post.map(p => p / sumPost);
 
-        // 4. Activity-transition prior: mix with uniform distribution
-        //    Analogous to particle diversification / resampling with
-        //    exploration to handle abrupt activity switches
+        // 4. Goal-switch prior (intent persistence)
         if (this.pSwitch > 0) {
-            post = post.map(p =>
-                (1 - this.pSwitch) * p + this.pSwitch * (1.0 / this.N)
-            );
+            post = post.map(p => (1 - this.pSwitch) * p + this.pSwitch * (1.0 / this.N));
         }
 
-        // 5. Posterior sharpening
+        // 5. Posterior temperature
         if (this.beta !== 1.0) {
             post = post.map(p => Math.pow(p, 1.0 / this.beta));
             sumPost = post.reduce((a, b) => a + b, 0);
             post = post.map(p => p / sumPost);
         }
 
-        // 6. Smoothing (prevents complete particle depletion)
-        post = post.map(p =>
-            (1 - this.eps) * p + this.eps * (1.0 / this.N)
-        );
+        // 6. Light smoothing
+        post = post.map(p => (1 - this.eps) * p + this.eps * (1.0 / this.N));
 
         // 7. Store back in log space
         this.logPost = post.map(p => Math.log(p + 1e-12));
 
-        // 8. Append to temporal segment history (extends graph G^t)
-        this.temporalSegments.push({ state, action: userAction });
+        // 8. Update temporal context
         this.prevAction = userAction;
 
         return post;
     }
 
-    /**
-     * Return the current normalized posterior over particles.
-     * Corresponds to the particle weight distribution (Eq. 4).
-     *
-     * @returns {number[]} Probability distribution over policies
-     */
     getProb() {
         const maxLog = Math.max(...this.logPost);
         let post = this.logPost.map(lp => Math.exp(lp - maxLog));
@@ -588,95 +392,17 @@ class CRFPredictor {
         return post.map(p => p / sumPost);
     }
 
-    /**
-     * Reset to uniform prior. Clears temporal segment history
-     * and re-initializes all particle weights equally.
-     */
     reset() {
         this.logPost = new Array(this.N).fill(Math.log(1.0 / this.N + 1e-12));
         this.prevAction = null;
-        this.temporalSegments = [];
     }
 
-    // =========================================================================
-    // Potential Functions  (Section III-A, Eq. 2 & Section III-D, Eq. 7)
-    // =========================================================================
-
-    /**
-     * Ψ_A — Sub-activity unary potential.
-     *
-     * Scores how likely action `a` is at observation `state` under this policy.
-     * Uses Q-values as the discriminative feature model, scaled by temperature τ
-     * (analogous to the learned node potential in [21]).
-     *
-     * @param {object} policy - Policy/particle
-     * @param {*}      state  - Observation
-     * @param {number}  action - Candidate action
-     * @returns {number} Unnormalized log-potential
-     */
-    _subActivityPotential(policy, state, action) {
-        const Q = policy.getQValue(state, action);
-        return Q / this.tau;
+    unaryFn(policy, state, action) {
+        return policy.getQValue(state, action) / this.tau;
     }
 
-    /**
-     * Ψ_O — Object-affordance unary potential  (Eq. 7).
-     *
-     * ψ_o = ∏_i ψ_{dist_i}  ×  ∏_j ψ_{ori_j}
-     *
-     * where ψ_{dist_i} is a Gaussian distance potential and
-     *       ψ_{ori_j}  is a von Mises angular potential.
-     *
-     * If the policy exposes getAffordanceScore(), that method should return
-     * the log of the product of distance and orientation potentials for the
-     * relevant affordance given the current state and candidate action.
-     *
-     * @param {object} policy - Policy/particle
-     * @param {*}      state  - Observation
-     * @param {number}  action - Candidate action
-     * @returns {number} Unnormalized log-potential (0.0 if not available)
-     */
-    _affordancePotential(policy, state, action) {
-        if (typeof policy.getAffordanceScore === 'function') {
-            return policy.getAffordanceScore(state, action);
-        }
-        return 0.0;
-    }
-
-    /**
-     * Ψ_E (temporal) — Edge potential across consecutive temporal segments.
-     *
-     * Models transition compatibility between sub-activities at segment k
-     * and segment k+1 (horizontal edges in Figure 2).
-     *
-     * @param {number} prevAction - Action in segment k
-     * @param {number} action     - Candidate action in segment k+1
-     * @returns {number} Unnormalized log-potential
-     */
-    _temporalEdgePotential(prevAction, action) {
+    pairwiseFn(prevAction, action) {
         return prevAction === action ? this.pairwiseWeight : 0.0;
-    }
-
-    /**
-     * Ψ_E (spatial) — Edge potential within a temporal segment.
-     *
-     * Models spatial relationships between co-temporal nodes: human-object
-     * interactions, object-object proximity, etc. (vertical edges in Figure 2
-     * connecting A↔O, O↔L, H↔O nodes within a single segment).
-     *
-     * If the policy exposes getSpatialScore(), that method should return
-     * the log-potential capturing spatial compatibility.
-     *
-     * @param {object} policy - Policy/particle
-     * @param {*}      state  - Observation
-     * @param {number}  action - Candidate action
-     * @returns {number} Unnormalized log-potential (0.0 if not available)
-     */
-    _spatialEdgePotential(policy, state, action) {
-        if (typeof policy.getSpatialScore === 'function') {
-            return policy.getSpatialScore(state, action);
-        }
-        return 0.0;
     }
 }
 
@@ -864,33 +590,33 @@ class DotSimulator {
          */
         switch(condition) {
             case 'A':
-                this.inferenceType = Inference.BAYESIAN;
-                this.arbitrationType = Arbitration.PROBABILISTIC;
+                this.INFERENCE_TYPE = Inference.BAYESIAN;
+                this.ARBITRATION_TYPE = Arbitration.PROBABILISTIC;
                 break;
-            case 'B': 
-                this.inferenceType = Inference.BAYESIAN;
-                this.arbitrationType = Arbitration.LINEAR;
+            case 'B':
+                this.INFERENCE_TYPE = Inference.BAYESIAN;
+                this.ARBITRATION_TYPE = Arbitration.LINEAR;
                 break;
-            case 'C': 
-                this.inferenceType = Inference.MAX_ENT;
-                this.arbitrationType = Arbitration.PROBABILISTIC;
+            case 'C':
+                this.INFERENCE_TYPE = Inference.MAX_ENT;
+                this.ARBITRATION_TYPE = Arbitration.PROBABILISTIC;
                 break;
-            case 'D': 
-                this.inferenceType = Inference.MAX_ENT;
-                this.arbitrationType = Arbitration.LINEAR;
+            case 'D':
+                this.INFERENCE_TYPE = Inference.MAX_ENT;
+                this.ARBITRATION_TYPE = Arbitration.LINEAR;
                 break;
-            case 'E': 
-                this.inferenceType = Inference.CRF;
-                this.arbitrationType = Arbitration.PROBABILISTIC;
+            case 'E':
+                this.INFERENCE_TYPE = Inference.CRF;
+                this.ARBITRATION_TYPE = Arbitration.PROBABILISTIC;
                 break;
-            case 'F': 
-                this.inferenceType = Inference.CRF;
-                this.arbitrationType = Arbitration.LINEAR;
+            case 'F':
+                this.INFERENCE_TYPE = Inference.CRF;
+                this.ARBITRATION_TYPE = Arbitration.LINEAR;
                 break;
         }
-        console.log("condition:" );
-        console.log(this.inferenceType);
-        console.log(this.arbitrationType)
+        console.log("condition:", condition);
+        console.log("INFERENCE_TYPE:", this.INFERENCE_TYPE);
+        console.log("ARBITRATION_TYPE:", this.ARBITRATION_TYPE);
     }
 
     // -------------------------
@@ -1195,7 +921,8 @@ class DotSimulator {
             ];
         } else if (this.ARBITRATION_TYPE === Arbitration.PROBABILISTIC) {
             this.robotConfidence = this.prob.length ? Math.max(...this.prob) : 0.0;
-            const pRobot = this.robotConfidence;
+            // Cap so user always retains at least 30% control
+            const pRobot = Math.min(this.robotConfidence, 0.7);
             blended = [
                 pRobot * aVec[0] + (1 - pRobot) * uVec[0],
                 pRobot * aVec[1] + (1 - pRobot) * uVec[1]
@@ -1272,8 +999,19 @@ class DotSimulator {
                 return;
             }
 
-            // Inference
-            this.prob = this.predictor.update(this.getState(this.dotX, this.dotY), u);
+            // Skip predictor update if user action pushes into a wall —
+            // wall-pressed actions carry no goal information and cause
+            // the belief to lock onto edge-seeking policies.
+            const [udx, udy] = this.indexToTuple(u);
+            const projX = this.dotX + udx * this.DOT_SPEED;
+            const projY = this.dotY + udy * this.DOT_SPEED;
+            const hitsWall = projX <= this.DOT_RADIUS || projX >= this.SCREEN_WIDTH - this.DOT_RADIUS
+                          || projY <= this.DOT_RADIUS || projY >= this.SCREEN_HEIGHT - this.DOT_RADIUS;
+
+            // Inference (only when the action is informative)
+            if (!hitsWall) {
+                this.prob = this.predictor.update(this.getState(this.dotX, this.dotY), u);
+            }
 
             // Assistance
             const optimalAction = this.assistant.getAction(
@@ -1411,7 +1149,7 @@ async function main() {
 
     
     // Get the study condition
-    const condition = document.getElementById('condition').innerText;
+    const condition = document.getElementById('condition').innerText.trim();
     simulator.setConditions(condition);
     console.log("conditions set");
     
