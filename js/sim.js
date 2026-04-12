@@ -202,15 +202,14 @@ class MaxEntPredictor {
      * @param {number} tau             - Temperature scaling Q-values before the update.
      * @param {number} eps             - Unused; kept for interface compatibility.
      */
-    constructor(policies, actionSpaceSize = 4, tau = 0.8, eps = 1e-2, decay = 0.95) {
+    constructor(policies, actionSpaceSize = 4, tau = 0.8, eps = 1e-2) {
         this.policies = policies;
         this.N = policies.length;
         this.actionSpaceSize = actionSpaceSize;
         this.tau = tau;
-        this.decay = decay;
 
-        this.maxProbAnyGoal = 0.85;
-        this.logMaxProbAnyGoal = Math.log(0.85);
+        this.maxProbAnyGoal = 0.99;
+        this.logMaxProbAnyGoal = Math.log(0.99);
 
         this._initLogPost();
     }
@@ -229,13 +228,6 @@ class MaxEntPredictor {
      * Normalization then re-scales the distribution.
      */
     update(state, userAction) {
-        // Decay prior evidence so the user can redirect
-        // (practical concession — pure accumulation locks on near goals)
-        for (let i = 0; i < this.N; i++) {
-            const logUniform = Math.log(1.0 / this.N + 1e-12);
-            this.logPost[i] = this.decay * this.logPost[i] + (1 - this.decay) * logUniform;
-        }
-
         for (let i = 0; i < this.N; i++) {
             const policy = this.policies[i];
 
@@ -308,6 +300,11 @@ class MaxEntPredictor {
 
     reset() {
         this._initLogPost();
+    }
+
+    onGoalReached() {
+        this._initLogPost();
+        return new Array(this.N).fill(1.0 / this.N);
     }
 }
 
@@ -921,8 +918,7 @@ class DotSimulator {
             ];
         } else if (this.ARBITRATION_TYPE === Arbitration.PROBABILISTIC) {
             this.robotConfidence = this.prob.length ? Math.max(...this.prob) : 0.0;
-            // Cap so user always retains at least 30% control
-            const pRobot = Math.min(this.robotConfidence, 0.7);
+            const pRobot = this.robotConfidence;
             blended = [
                 pRobot * aVec[0] + (1 - pRobot) * uVec[0],
                 pRobot * aVec[1] + (1 - pRobot) * uVec[1]
@@ -979,6 +975,8 @@ class DotSimulator {
         /**
          * Main loop: handle input, inference, assistance, arbitration, drawing.
          */
+        let prevSpoonImage = this.activeSpoonImage;
+
         const gameLoop = () => {
             // Check user action for THIS frame
             let u = -1;
@@ -1027,6 +1025,15 @@ class DotSimulator {
             this.ensureWithinBoundaries();
             this.redrawScreen();
             
+            // Reset predictor when an ingredient is picked up or deposited so the
+            // robot doesn't keep dragging the agent back to the last goal.
+            if (this.activeSpoonImage !== prevSpoonImage) {
+                if (this.predictor.onGoalReached) {
+                    this.prob = this.predictor.onGoalReached();
+                }
+                prevSpoonImage = this.activeSpoonImage;
+            }
+
             this.updateUI();
 
             requestAnimationFrame(gameLoop);
@@ -1078,6 +1085,9 @@ function createBottomRightPolicy(gridSize, actionSize) {
 function createOrbitPolicy(gridSize, actionSize) {
     const qTable = [];
     const center = gridSize / 2;
+    // const center = [2.75, 27.25]; //[5,5];
+    console.log("CENTER");
+    console.log(center)
     const targetRadius = gridSize / 3;
     
     for (let x = 0; x < gridSize; x++) {
@@ -1113,15 +1123,15 @@ async function loadPolicies() {
     const policyNames = ['topleft', 'bottomright', 'orbit'];
     
     for (const name of policyNames) {
-        try {
-            const response = await fetch(`q_table_${name}.json`);
-            if (response.ok) {
-                const qTable = await response.json();
-                policies.push(new DotPolicy(`q_table_${name}.json`, qTable));
-            } else {
-                throw new Error('Failed to load');
-            }
-        } catch (e) {
+        // try {
+        //     const response = await fetch(`q_table_${name}.json`);
+        //     if (response.ok) {
+        //         const qTable = await response.json();
+        //         policies.push(new DotPolicy(`q_table_${name}.json`, qTable));
+        //     } else {
+        //         throw new Error('Failed to load');
+        //     }
+        // } catch (e) {
             console.warn(`Failed to load policy ${name}, creating synthetic policy`);
             let qTable;
             if (name === 'topleft') {
@@ -1132,7 +1142,7 @@ async function loadPolicies() {
                 qTable = createOrbitPolicy(gridSize, actionSize);
             }
             policies.push(new DotPolicy(`q_table_${name}.json`, qTable));
-        }
+        // }
     }
     
     return policies;
@@ -1155,10 +1165,12 @@ async function main() {
     
     // Load background images
     const backgroundConfig = [
+        // {filename: 'sugar.png', x: 300, y: 300, xscale: 150, yscale: 150},
         {filename: 'sugar.png', x: 55, y: 545, xscale: 150, yscale: 150},
         {filename: 'milk_carton.png', x: 545, y: 545, xscale: 150, yscale: 150},
         {filename: 'chocolate_chips.png', x: 545, y: 55, xscale: 150, yscale: 150},
         {filename: 'egg.png', x: 55, y: 55, xscale: 150, yscale: 150},
+        // {filename: 'mixing_bowl.png', x: 130, y: 480, xscale: 300, yscale: 300},
         {filename: 'mixing_bowl.png', x: 300, y: 300, xscale: 300, yscale: 300},
         {filename: 'spoon.png', x: 'None', y: 'None', xscale:150, yscale: 150}
     ];
