@@ -129,6 +129,8 @@ class MaxEntPredictor {
 ```
 Maximum Entropy IOC predictor with exponentially weighted updates.
 
+MaxEnt Predictor: "Shared Autonomy via Hindsight Optimization" - https://github.com/personalrobotics/ada_assistance_policy/tree/master/src/ada_assistance_policy
+
 #### CRFPredictor
 ```javascript
 class CRFPredictor {
@@ -271,6 +273,7 @@ With temporal decay to prevent over-confidence.
 Q_expected = Σ P(policy_i) × Q_i(state, action)
 action* = argmax Q_expected
 ```
+
 Weighted by belief distribution.
 
 ### Arbitration
